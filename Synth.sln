@@ -3,9 +3,11 @@ Microsoft Visual Studio Solution File, Format Version 12.00
 # Visual Studio Version 16
 VisualStudioVersion = 16.0.30320.27
 MinimumVisualStudioVersion = 10.0.40219.1
-Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "Synth", "Synth\Synth.csproj", "{C9A57D4A-4F6A-4219-9BA1-E8F73B39165C}"
+Project("{9A19103F-16F7-4668-BE54-9A1E7A4F7556}") = "Synth", "Synth\Synth.csproj", "{C9A57D4A-4F6A-4219-9BA1-E8F73B39165C}"
 EndProject
-Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "Synth.Console", "Synth.Console\Synth.Console.csproj", "{971D2FB4-A91E-4D47-9215-12632A6A092C}"
+Project("{9A19103F-16F7-4668-BE54-9A1E7A4F7556}") = "Synth.Console", "Synth.Console\Synth.Console.csproj", "{971D2FB4-A91E-4D47-9215-12632A6A092C}"
+EndProject
+Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "Synth.UI", "Synth.UI\Synth.UI.csproj", "{6C32B601-62BB-404D-9C35-F5FABD72AE7E}"
 EndProject
 Global
 	GlobalSection(SolutionConfigurationPlatforms) = preSolution
@@ -21,6 +23,10 @@ Global
 		{971D2FB4-A91E-4D47-9215-12632A6A092C}.Debug|Any CPU.Build.0 = Debug|Any CPU
 		{971D2FB4-A91E-4D47-9215-12632A6A092C}.Release|Any CPU.ActiveCfg = Release|Any CPU
 		{971D2FB4-A91E-4D47-9215-12632A6A092C}.Release|Any CPU.Build.0 = Release|Any CPU
+		{6C32B601-62BB-404D-9C35-F5FABD72AE7E}.Debug|Any CPU.ActiveCfg = Debug|Any CPU
+		{6C32B601-62BB-404D-9C35-F5FABD72AE7E}.Debug|Any CPU.Build.0 = Debug|Any CPU
+		{6C32B601-62BB-404D-9C35-F5FABD72AE7E}.Release|Any CPU.ActiveCfg = Release|Any CPU
+		{6C32B601-62BB-404D-9C35-F5FABD72AE7E}.Release|Any CPU.Build.0 = Release|Any CPU
 	EndGlobalSection
 	GlobalSection(SolutionProperties) = preSolution
 		HideSolutionNode = FALSE

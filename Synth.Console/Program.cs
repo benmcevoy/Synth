@@ -9,45 +9,53 @@ namespace Synth.Console
             const int sampleRate = 11025;
             const int durationInSeconds = 32;
 
-            var pcm = new EightBitPcmStream(sampleRate, durationInSeconds);
+            Master.Volume = 64;
+
+            var voice = new Voice
+            {
+                WaveForm = WaveForm.PulseWave(),
+                PulseWidth = Harmonic,
+                Envelope = Envelope.Decay()
+            };
+
+            var pcm = new EightBitPcmStream(sampleRate, durationInSeconds, voice);
             var device = new Devices.WaveOutDevice(pcm, sampleRate, 1);
             //var device = new Devices.FileOutDevice(pcm, sampleRate, durationInSeconds, "wave.wav");
 
-            Voice.MasterVolume = 120;
-            Voice.Frequency = PitchTable.C3;
-            Voice.Envelope = Envelopes.Attack(0, rate:TimingTable.S1);
-            Voice.WaveForm = WaveForms.Triangle();
-            
             device.Play();
 
             while (true)
             {
+                // we have reached the limit of console app without hooking WM_ messages
+                // WPF version has key up/down to control ADSR... although I am still writing that...
                 if (!System.Console.KeyAvailable) continue;
 
-                Voice.Frequency = ProcessKeyPress(System.Console.ReadKey().Key);
-
+                voice.Frequency = ProcessKeyPress(System.Console.ReadKey().Key);
+                
                 // need a retrigger here instead
-                Voice.Envelope = Envelopes.Attack(rate: 64);
+                voice.Envelope = Envelope.Decay(pcm.Time);
             }
         }
 
-        private static double ProcessKeyPress(ConsoleKey key) =>
+        public static double Harmonic(double t, double f) => f + (f * 2) ;
+
+        private static Func<double, double> ProcessKeyPress(ConsoleKey key) =>
             key switch
             {
-                ConsoleKey.A => PitchTable.C3,
-                ConsoleKey.W => PitchTable.Db3,
-                ConsoleKey.S => PitchTable.D3,
-                ConsoleKey.E => PitchTable.Eb3,
-                ConsoleKey.D => PitchTable.E3,
-                ConsoleKey.F => PitchTable.F3,
-                ConsoleKey.T => PitchTable.Gb3,
-                ConsoleKey.G => PitchTable.G3,
-                ConsoleKey.Y => PitchTable.Ab3,
-                ConsoleKey.H => PitchTable.A3,
-                ConsoleKey.U => PitchTable.Bb3,
-                ConsoleKey.J => PitchTable.B3,
-                ConsoleKey.K => PitchTable.C4,
-                _ => Voice.Frequency
+                ConsoleKey.A => (t) => PitchTable.C3,
+                ConsoleKey.W => (t) => PitchTable.Db3,
+                ConsoleKey.S => (t) => PitchTable.D3,
+                ConsoleKey.E => (t) => PitchTable.Eb3,
+                ConsoleKey.D => (t) => PitchTable.E3,
+                ConsoleKey.F => (t) => PitchTable.F3,
+                ConsoleKey.T => (t) => PitchTable.Gb3,
+                ConsoleKey.G => (t) => PitchTable.G3,
+                ConsoleKey.Y => (t) => PitchTable.Ab3,
+                ConsoleKey.H => (t) => PitchTable.A3,
+                ConsoleKey.U => (t) => PitchTable.Bb3,
+                ConsoleKey.J => (t) => PitchTable.B3,
+                ConsoleKey.K => (t) => PitchTable.C4,
+                _ => (t) => PitchTable.A4
             };
     }
 }

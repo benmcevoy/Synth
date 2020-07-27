@@ -2,34 +2,29 @@
 
 namespace Synth
 {
-    // TODO: should become an object so i can have more than one voice
-/*
- * constraints and limits
-identify and name the knobs
-    volume
-    width, speed, should all be limited to byte resolution
-    just copy SID
+    public static class Master
+    {
+        public static byte Volume = 128;
+        public static byte Mix(double t, Voice voice) => Convert.ToByte(Volume * voice.Output(t) / byte.MaxValue);
+    }
 
- */
+    public class Voice
+    {
+        public Func<double, double> Frequency = (t) => PitchTable.A4;
+        public Func<double, byte> Volume = (t) => 255;
+        public Func<double, double, double, byte> WaveForm = Synth.WaveForm.SineWave();
+        public Func<double, byte, byte> Envelope = Synth.Envelope.Sustain();
+        public Func<double, double, double> PulseWidth = (t, f) => PitchTable.A4 / 2;
 
+        // ADSR needs producer of values Func<double> for rate and duration.
+        // all the variables things should be here as "registers"
 
-public static class Voice
-{
-    // TODO: voice volume
-    public static byte Volume = 255;
+        //public void Trigger(double t0)
+        //{
+        //    Synth.Envelope.TriggerADS(t0)
+        //}
 
-    public static double Frequency = 440;
-
-    public static Func<double, double, byte> WaveForm = WaveForms.SineWave();
-
-    public static Func<double, byte, byte> Envelope = Envelopes.Sustain();
-
-
-    // TODO: should be moved out of here
-    public static byte MasterVolume = 128;
-
-    // TODO: should be moved out of here
-    public static byte Master(double t, double f) =>
-        MasterVolume > 0 ? Convert.ToByte(MasterVolume * (double)Envelope(t, WaveForm(t, f)) / byte.MaxValue) : byte.MinValue;
-}
+        public byte Output(double t)
+            => Convert.ToByte(Volume(t) * (double)Envelope(t, WaveForm(t, Frequency(t), PulseWidth(t, Frequency(t)))) / byte.MaxValue);
+    }
 }

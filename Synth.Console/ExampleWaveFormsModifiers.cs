@@ -1,6 +1,6 @@
 ﻿using System;
 using static System.Math;
-using WaveForm = System.Func<double, double, byte>;
+using W = System.Func<double, double, byte>;
 
 namespace Synth.Console
 {
@@ -8,12 +8,12 @@ namespace Synth.Console
     {
 
         // slide up and down
-        public static WaveForm Vibrato(WaveForm wave, int speed = 120)
+        public static W Vibrato(W wave, int speed = 120)
             => (t, f)
                 => wave(t, Sin(speed * t) + f);
 
         // would be nice to have it go up/down
-        public static WaveForm Arpeggio(WaveForm wave, double t0, int[] scale, double speed = 0.1)
+        public static W Arpeggio(W wave, double t0, int[] scale, double speed = 0.1)
         => (t, f)
             => wave(t, f + Twelfth(f) * scale[Limit(Quantize(t0, t, speed), scale.Length - 1)]);
 
@@ -21,7 +21,7 @@ namespace Synth.Console
         // needs to be circular or stop, or up/down - a "bend"
         // wants to glide from scale[n] to scale[n+1]
         [Obsolete("not working yet")]
-        public static WaveForm Glissando(WaveForm wave, double[] scale, int speed = 16)
+        public static W Glissando(W wave, double[] scale, int speed = 16)
             => (t, f)
                 => wave(t, scale[(int)Floor(speed * t % scale.Length)]);
 

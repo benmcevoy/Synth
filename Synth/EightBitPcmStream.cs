@@ -7,12 +7,14 @@ namespace Synth
     public class EightBitPcmStream : Stream
     {
         private readonly double _sampleRate;
+        private readonly Voice _voice;
         private readonly byte[] _prelude;
         private long _position;
 
-        public EightBitPcmStream(double sampleRate, int durationInSeconds = 1)
+        public EightBitPcmStream(double sampleRate, int durationInSeconds, Voice voice)
         {
             _sampleRate = sampleRate;
+            _voice = voice;
             _prelude = Prelude((int)sampleRate * durationInSeconds, 8, (int)sampleRate, 1);
         }
 
@@ -31,7 +33,7 @@ namespace Synth
 
             while (counter < count)
             {
-                buffer[offset + counter] = Voice.Master(_position / _sampleRate, Voice.Frequency);
+                buffer[offset + counter] = Master.Mix(_position / _sampleRate, _voice);
                 counter++;
                 _position++;
             }
