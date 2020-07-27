@@ -7,6 +7,8 @@ Time domain (so far) audio synth, I've been trying to keep to a functional style
 
 There's a fair bit more to do.
 
+[frequency mod sample](/samples/frequencymod.wav)
+
 Read this if you are interested in some SID chip design background:
 
 https://www.gamejournal.it/driving-the-sid-chip-assembly-language-composition-and-sound-design-for-the-c64/
