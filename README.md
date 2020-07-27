@@ -14,4 +14,5 @@ There's a fair bit more to do.
 Read this if you are interested in some SID chip design background:
 
 https://www.gamejournal.it/driving-the-sid-chip-assembly-language-composition-and-sound-design-for-the-c64/
+
 http://sid.kubarth.com/articles/interview_bob_yannes.html
