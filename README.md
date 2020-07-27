@@ -7,9 +7,9 @@ Time domain (so far) audio synth, I've been trying to keep to a functional style
 
 There's a fair bit more to do.
 
-![frequency mod sample](/Synth/blob/master/Samples/frequencymod.wav)
+![frequency mod sample](https://github.com/benmcevoy/Synth/blob/master/Samples/frequencymod.wav)
 
-![arpeggio](/Synth/blob/master/Samples/arpeggio.wav)
+![arpeggio](https://github.com/benmcevoy/Synth/blob/master/Samples/arpeggio.wav)
 
 Read this if you are interested in some SID chip design background:
 
