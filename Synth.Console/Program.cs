@@ -9,7 +9,7 @@ namespace Synth.Console
             const int sampleRate = 11025;
             const int durationInSeconds = 32;
 
-            Master.Volume = 64;
+            Mixer.Volume = 64;
 
             var voice = new Voice
             {

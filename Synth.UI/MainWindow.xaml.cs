@@ -3,6 +3,7 @@ using System.Collections.Generic;
 using System.Linq;
 using System.Text;
 using System.Threading.Tasks;
+using System.Timers;
 using System.Windows;
 using System.Windows.Controls;
 using System.Windows.Data;
@@ -12,6 +13,7 @@ using System.Windows.Media;
 using System.Windows.Media.Imaging;
 using System.Windows.Navigation;
 using System.Windows.Shapes;
+using System.Windows.Threading;
 
 namespace Synth.UI
 {
@@ -22,6 +24,7 @@ namespace Synth.UI
     {
         private readonly EightBitPcmStream _pcm;
         private readonly Voice _voice = new Voice();
+        private readonly DispatcherTimer _timer = new DispatcherTimer();
 
         public MainWindow()
         {
@@ -46,6 +49,34 @@ namespace Synth.UI
 
             KeyDown += MainWindow_KeyDown;
             KeyUp += MainWindow_KeyUp;
+
+            _timer.Tick += new EventHandler(Draw);
+            _timer.Interval = TimeSpan.FromMilliseconds(10);
+            _timer.Start();
+        }
+
+        private int _drawX = 0;
+        private void Draw(object sender, EventArgs e)
+        {
+            if (_drawX > 600)
+            {
+                _drawX = 0;
+                Output.Children.Clear();
+            }
+
+            var l = new Line
+            {
+                Stroke = Brushes.Blue,
+                StrokeThickness = 0.8,
+                X1 = _drawX,
+                X2 = _drawX,
+                Y2 = 300 - _voice.Output(_pcm.Time),
+                Y1 = 300
+            };
+
+            Output.Children.Add(l);
+
+            _drawX++;
         }
 
         private void MainWindow_KeyUp(object sender, KeyEventArgs e)
