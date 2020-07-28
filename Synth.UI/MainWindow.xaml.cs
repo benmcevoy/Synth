@@ -58,9 +58,10 @@ namespace Synth.UI
             if (attack)
             {
                 voice.Frequency = (t) => f;
-                voice.Envelope = Envelope.TriggerADS(_pcm.Time, 128, 1, 128, 1, voice.Volume(_pcm.Time));
+                voice.TriggerAttack(_pcm.Time);
+
             }
-            else voice.Envelope = Envelope.TriggerR(_pcm.Time, TimingTable.S1);
+            else voice.Envelope = voice.TriggerRelease(_pcm.Time);
         }
 
         private void MainWindow_KeyDown(object sender, KeyEventArgs e)

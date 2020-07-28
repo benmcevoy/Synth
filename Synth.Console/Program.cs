@@ -13,9 +13,9 @@ namespace Synth.Console
 
             var voice = new Voice
             {
-                WaveForm = WaveForm.PulseWave(),
+                WaveForm = WaveForm.SineWave(),
                 PulseWidth = Harmonic,
-                Envelope = Envelope.Decay()
+                
             };
 
             var pcm = new EightBitPcmStream(sampleRate, durationInSeconds, voice);
@@ -31,9 +31,8 @@ namespace Synth.Console
                 if (!System.Console.KeyAvailable) continue;
 
                 voice.Frequency = ProcessKeyPress(System.Console.ReadKey().Key);
-                
-                // need a retrigger here instead
-                voice.Envelope = Envelope.Decay(pcm.Time);
+
+                voice.TriggerAttack(pcm.Time);
             }
         }
 
