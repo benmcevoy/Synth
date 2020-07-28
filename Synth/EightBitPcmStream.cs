@@ -11,20 +11,20 @@ namespace Synth
         private readonly byte[] _prelude;
         private long _position;
 
-        public EightBitPcmStream(double sampleRate, int durationInSeconds, Voice voice)
+        public EightBitPcmStream(int sampleRate, Voice voice)
         {
             _sampleRate = sampleRate;
             _voice = voice;
-            _prelude = Prelude((int)sampleRate * durationInSeconds, 8, (int)sampleRate, 1);
+            _prelude = Prelude(sampleRate * 4, 8, sampleRate, 1);
         }
 
-        public double Time => _position/_sampleRate;
+        public double Time => _position / _sampleRate;
 
         public override int Read(byte[] buffer, int offset, int count)
         {
             var counter = 0;
 
-            while (_position < 44 && _position < count)
+            while (_position < _prelude.Length && _position < count)
             {
                 buffer[offset + _position] = _prelude[_position];
                 _position++;
@@ -61,7 +61,7 @@ namespace Synth
         public override bool CanSeek { get; } = true;
         public override bool CanWrite { get; } = false;
         public override long Length { get; }
-        
+
         public override long Position
         {
             get => _position;
@@ -135,7 +135,7 @@ namespace Synth
         {
             const int count = sizeof(byte);
 
-            Buffer.BlockCopy(BitConverter.GetBytes(value), 0, target, offset, count);
+            Buffer.BlockCopy(BitConverter.GetBytes(value), 0, target, offset, sizeof(byte));
 
             return count;
         }

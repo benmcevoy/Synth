@@ -3,5 +3,7 @@
     public interface IDevice
     {
         void Play();
+
+        void Stop();
     }
 }

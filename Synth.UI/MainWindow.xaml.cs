@@ -20,15 +20,14 @@ namespace Synth.UI
         {
             InitializeComponent();
 
-            const int sampleRate = 11025;
-            const int durationInSeconds = 32;
+            const int sampleRate = 44100;
 
-            _pcm = new EightBitPcmStream(sampleRate, durationInSeconds, _voice);
+            _pcm = new EightBitPcmStream(sampleRate, _voice);
 
             _voice.Volume = (t) => 255;
             _voice.Frequency = (t) => PitchTable.C3;
-            _voice.Envelope = Envelope.Decay(0, duration: TimingTable.S1);
-            _voice.WaveForm = WaveForm.Triangle();
+            _voice.Envelope = Envelope.Sustain(128);
+            _voice.WaveForm = WaveForm.Sawtooth();
 
             _timer.Tick += new EventHandler(Draw);
             _timer.Interval = TimeSpan.FromMilliseconds(20);
