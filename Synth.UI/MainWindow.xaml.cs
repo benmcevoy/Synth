@@ -1,17 +1,7 @@
 ﻿using System;
-using System.Collections.Generic;
-using System.Linq;
-using System.Text;
-using System.Threading.Tasks;
-using System.Timers;
 using System.Windows;
-using System.Windows.Controls;
-using System.Windows.Data;
-using System.Windows.Documents;
 using System.Windows.Input;
 using System.Windows.Media;
-using System.Windows.Media.Imaging;
-using System.Windows.Navigation;
 using System.Windows.Shapes;
 using System.Windows.Threading;
 
@@ -35,24 +25,21 @@ namespace Synth.UI
 
             _pcm = new EightBitPcmStream(sampleRate, durationInSeconds, _voice);
 
-            var device = new Devices.WaveOutDevice(_pcm, sampleRate, 1);
-
-
             _voice.Volume = (t) => 255;
             _voice.Frequency = (t) => PitchTable.C3;
-            _voice.Envelope = Envelope.Decay(0, rate: TimingTable.S1);
+            _voice.Envelope = Envelope.Decay(0, duration: TimingTable.S1);
             _voice.WaveForm = WaveForm.Triangle();
 
-            device.Play();
-
-
+            _timer.Tick += new EventHandler(Draw);
+            _timer.Interval = TimeSpan.FromMilliseconds(20);
+            _timer.Start();
 
             KeyDown += MainWindow_KeyDown;
             KeyUp += MainWindow_KeyUp;
 
-            _timer.Tick += new EventHandler(Draw);
-            _timer.Interval = TimeSpan.FromMilliseconds(10);
-            _timer.Start();
+            var device = new Devices.WaveOutDevice(_pcm, sampleRate, 1);
+
+            device.Play();
         }
 
         private int _drawX = 0;
@@ -90,7 +77,6 @@ namespace Synth.UI
             {
                 voice.Frequency = (t) => f;
                 voice.TriggerAttack(_pcm.Time);
-
             }
             else voice.Envelope = voice.TriggerRelease(_pcm.Time);
         }

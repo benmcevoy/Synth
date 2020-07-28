@@ -7,42 +7,42 @@ namespace Synth
 {
     public static class Envelope
     {
-        // convert the rate to a duration
-        private static double T(byte rate) => 85 / rate * Pow(rate, 2) / 8;
+        // convert the duration to a rate
+        private static double T(double duration) => 85 / duration * Pow(duration, 2) / 8;
 
-        public static E Attack(double t0, byte rate)
+        public static E Attack(double t0, double duration)
             => (t, v)
-                => T(rate) * (t - t0) < MaxValue
-                    ? Convert.ToByte(v * (T(rate) * (t - t0)) / MaxValue)
+                => T(duration) * (t - t0) < MaxValue
+                    ? v = Convert.ToByte(v * (T(duration) * (t - t0)) / MaxValue)
                     : v;
 
-        public static E Decay(double t0, byte rate)
+        public static E Decay(double t0, double duration)
             => (t, v)
-                => T(rate) * (t - t0) < MaxValue
-                    ? Convert.ToByte(v * ((MaxValue - T(rate) * (t - t0)) / MaxValue))
-                    : MinValue;
+                => T(duration) * (t - t0) < MaxValue
+                    ? v = Convert.ToByte(v * ((MaxValue - T(duration) * (t - t0)) / MaxValue))
+                    : v = MinValue;
 
-        public static E Sustain(byte level) => (t, v) => level;
+        public static E Sustain(byte s) => (t, v) => v = Convert.ToByte(v * s / MaxValue);
 
-        public static E Release(double t0, byte rate)
+        public static E Release(double t0, double rate)
             => Decay(t0, rate);
 
         public static E Mute() => (t0, v) => 0;
 
-        internal static E TriggerAttack(double t0, byte aR, double aT, byte dR, double dT, byte s)
+        internal static E TriggerAttack(double t0, double attack, double decay, byte sustain)
             => (t, v)
-                => AttackState(t0, t, aT, dT) switch
+                => AttackState(t0, t, attack, decay) switch
                 {
-                    1 => Attack(t0, aR)(t, v),
-                    2 => Decay(t0 + aT, dR)(t, v),
-                    _ => Sustain(s)(t, v)
+                    1 => Attack(t0, T(attack))(t, v),
+                    2 => Decay(t0 + attack, T(decay))(t, v),
+                    _ => Sustain(sustain)(t, v)
                 };
 
-        internal static E TriggerRelease(double t0, byte rR, double rT)
+        internal static E TriggerRelease(double t0, byte sustain, double release)
             => (t, v)
-                => ReleaseState(t0, t, rT) switch
+                => ReleaseState(t0, t, release) switch
                 {
-                    1 => Release(t0, rR)(t, v),
+                    1 => Release(t0, T(release))(t, Sustain(sustain)(t, v)),
                     _ => Mute()(t, v)
                 };
 
