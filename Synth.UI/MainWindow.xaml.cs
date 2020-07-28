@@ -24,10 +24,15 @@ namespace Synth.UI
 
             _pcm = new EightBitPcmStream(sampleRate, _voice);
 
+            Mixer.Volume = 255;
+
             _voice.Volume = (t) => 255;
-            _voice.Frequency = (t) => PitchTable.C3;
-            _voice.Envelope = Envelope.Sustain(128);
+            _voice.Frequency = PitchTable.C3;
             _voice.WaveForm = WaveForm.Sawtooth();
+            _voice.Attack = 1;
+            _voice.Decay = 1;
+            _voice.Sustain = 128;
+            _voice.Release = 1;
 
             _timer.Tick += new EventHandler(Draw);
             _timer.Interval = TimeSpan.FromMilliseconds(20);
@@ -67,14 +72,14 @@ namespace Synth.UI
 
         private void MainWindow_KeyUp(object sender, KeyEventArgs e)
         {
-            TriggerVoice(_voice, 0, false);
+            TriggerVoice(_voice, _voice.Frequency, false);
         }
 
-        private void TriggerVoice(Voice voice, double f, bool attack)
+        private void TriggerVoice(Voice voice, Func<double, double> f, bool attack)
         {
             if (attack)
             {
-                voice.Frequency = (t) => f;
+                voice.Frequency = f;
                 voice.TriggerAttack(_pcm.Time);
             }
             else voice.Envelope = voice.TriggerRelease(_pcm.Time);

@@ -8,13 +8,13 @@ namespace Synth
     {
         public static E Attack(double t0, double duration)
             => (t, v)
-                => (duration - (t - t0)) > MinValue
+                => !Elapsed(t0, t, duration)
                     ? Convert.ToByte(v * (v * (t - t0)) / MaxValue)
                     : MaxValue;
 
         public static E Decay(double t0, double duration, byte sustain)
             => (t, v)
-                => (duration - (t - t0)) > MinValue
+                => !Elapsed(t0, t, duration)
                     ? Convert.ToByte(v * (MaxValue - (sustain * (t - t0))) / MaxValue)
                     : MinValue;
 
@@ -24,7 +24,7 @@ namespace Synth
 
         public static E Release(double t0, double duration, byte sustain)
             => (t, v)
-                => (duration - (t - t0)) > MinValue
+                => !Elapsed(t0, t, duration)
                     ? Convert.ToByte(v * (sustain - (sustain * (t - t0))) / MaxValue)
                     : MinValue;
 
@@ -49,20 +49,16 @@ namespace Synth
                         _ => Mute()(t, v)
                     };
 
-        //// convert the duration to a rate.  Rate is from 0 to MaxValue
-        //private static double Rate(double duration)
-        //    => duration / MaxValue;
-
         private static bool Elapsed(double t0, double t, double duration)
             => t - t0 > duration;
 
-        private static int AttackState(double t0, double t, double attackDuration, double decayDuration)
-            => !Elapsed(t0, t, attackDuration) ? 1
-                : !Elapsed(t0 + attackDuration, t, decayDuration) ? 2
+        private static int AttackState(double t0, double t, double attack, double decay)
+            => !Elapsed(t0, t, attack) ? 1
+                : !Elapsed(t0 + attack, t, decay) ? 2
                 : int.MaxValue;
 
-        private static int ReleaseState(double t0, double t, double releaseDuration)
-            => !Elapsed(t0, t, releaseDuration) ? 1
+        private static int ReleaseState(double t0, double t, double release)
+            => !Elapsed(t0, t, release) ? 1
                 : int.MaxValue;
     }
 }

@@ -38,7 +38,7 @@ namespace Synth.Console
                 if (key == ConsoleKey.Escape) break;
 
                 voice.Frequency = ProcessKeyPress(key);
-                voice.TriggerRelease(pcm.Time);
+                voice.TriggerAttack(pcm.Time);
             }
 
             device.Stop();
@@ -51,20 +51,20 @@ namespace Synth.Console
         private static Func<double, double> ProcessKeyPress(ConsoleKey key) =>
             key switch
             {
-                ConsoleKey.A => (t) => PitchTable.C3,
-                ConsoleKey.W => (t) => PitchTable.Db3,
-                ConsoleKey.S => (t) => PitchTable.D3,
-                ConsoleKey.E => (t) => PitchTable.Eb3,
-                ConsoleKey.D => (t) => PitchTable.E3,
-                ConsoleKey.F => (t) => PitchTable.F3,
-                ConsoleKey.T => (t) => PitchTable.Gb3,
-                ConsoleKey.G => (t) => PitchTable.G3,
-                ConsoleKey.Y => (t) => PitchTable.Ab3,
-                ConsoleKey.H => (t) => PitchTable.A3,
-                ConsoleKey.U => (t) => PitchTable.Bb3,
-                ConsoleKey.J => (t) => PitchTable.B3,
-                ConsoleKey.K => (t) => PitchTable.C4,
-                _ => (t) => PitchTable.A4
+                ConsoleKey.A => PitchTable.C3,
+                ConsoleKey.W => PitchTable.Db3,
+                ConsoleKey.S => PitchTable.D3,
+                ConsoleKey.E => PitchTable.Eb3,
+                ConsoleKey.D => PitchTable.E3,
+                ConsoleKey.F => PitchTable.F3,
+                ConsoleKey.T => PitchTable.Gb3,
+                ConsoleKey.G => PitchTable.G3,
+                ConsoleKey.Y => PitchTable.Ab3,
+                ConsoleKey.H => PitchTable.A3,
+                ConsoleKey.U => PitchTable.Bb3,
+                ConsoleKey.J => PitchTable.B3,
+                ConsoleKey.K => PitchTable.C4,
+                _ => PitchTable.A4
             };
     }
 }
