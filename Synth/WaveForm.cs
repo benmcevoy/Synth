@@ -25,7 +25,7 @@ namespace Synth
         /// <remarks>
         /// 8 bit PCM is 0-255, hence the 128 + (127 * f()) to offset signed doubles
         /// </remarks>
-        /// <param name="value">a value between 0 and 1</param>
+        /// <param name="value">a value between -1 and 1</param>
         /// <returns></returns>
         private static byte Offset(double value) => Convert.ToByte(128 + (127 * value));
 
