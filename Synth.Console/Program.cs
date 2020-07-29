@@ -19,7 +19,6 @@ namespace Synth.Console
                 Sustain = 200,
                 SustainDuration = 1,
                 Release = 0.5,
-                //Envelope = (t, v) => WaveForm.SineWave()(t, v, 0),
             };
 
             var pcm = new EightBitPcmStream(sampleRate, voice);

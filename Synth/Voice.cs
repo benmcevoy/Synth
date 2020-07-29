@@ -26,7 +26,7 @@ namespace Synth
         public Func<double, byte, byte> Envelope = Synth.Envelope.Mute();
 
         /// <summary>
-        /// Produce a pulsewidth value from the current time and frequency. 
+        /// Produce a pulsewidth value from the current time and frequency. Pulse width can be used to modulate waveforms.
         /// </summary>
         public Func<double, double, double> PulseWidth = (t, f) => 0;
 
@@ -46,8 +46,9 @@ namespace Synth
         public byte Sustain = 128;
 
         /// <summary>
-        /// The sustain duration. 1.0 is equal to 1 second.  Sustain duration can be used when gating is unavailable, such as in a sequencer.
+        /// The sustain duration. 1.0 is equal to 1 second.  Sustain duration is only used when TriggerADSR is called.
         /// </summary>
+        /// <remarks>Sustain duration is useful when gating is unavailable to trigger the release phase, such as in a sequencer or "programmed" music.</remarks>
         public double SustainDuration = 1;
 
         /// <summary>
@@ -61,7 +62,7 @@ namespace Synth
         /// <param name="t0"></param>
         /// <returns></returns>
         public Func<double, byte, byte> TriggerAttack(double t0)
-            => Envelope = Synth.Envelope.TriggerAttack(t0, Attack, Decay, Sustain);
+            => Envelope = (t, v) => Synth.Envelope.TriggerAttack(t0, v, Attack, Decay, Sustain)(t, v);
 
         /// <summary>
         /// Trigger the release phase of the envelope modulation.
@@ -69,7 +70,7 @@ namespace Synth
         /// <param name="t0"></param>
         /// <returns></returns>
         public Func<double, byte, byte> TriggerRelease(double t0)
-            => Envelope = Synth.Envelope.TriggerRelease(t0, Sustain, Release);
+            => Envelope = (t, v) => Synth.Envelope.TriggerRelease(t0, v, Release)(t, v);
 
         /// <summary>
         /// Trigger an automatic ADSR cycle of the envelope modulation.
@@ -77,7 +78,7 @@ namespace Synth
         /// <param name="t0"></param>
         /// <returns></returns>
         public Func<double, byte, byte> TriggerADSR(double t0)
-            => Envelope = Synth.Envelope.ADSR(t0, Attack, Decay, Sustain, SustainDuration, Release);
+            => Envelope = (t, v) => Synth.Envelope.ADSR(t0, v, t, Attack, Decay, Sustain, SustainDuration, Release)(t, v);
 
         /// <summary>
         /// Final output of this voice.
