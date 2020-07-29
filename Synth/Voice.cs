@@ -59,7 +59,7 @@ namespace Synth
         /// <summary>
         /// Trigger the attack, decay, sustain phases of the envelope modulation.  
         /// </summary>
-        /// <param name="t0"></param>
+        /// <param name="t0">Start time</param>
         /// <returns></returns>
         public Func<double, byte, byte> TriggerAttack(double t0)
             => Envelope = (t, v) => Synth.Envelope.TriggerAttack(t0, v, Attack, Decay, Sustain)(t, v);
@@ -67,7 +67,7 @@ namespace Synth
         /// <summary>
         /// Trigger the release phase of the envelope modulation.
         /// </summary>
-        /// <param name="t0"></param>
+        /// <param name="t0">Start time</param>
         /// <returns></returns>
         public Func<double, byte, byte> TriggerRelease(double t0)
             => Envelope = (t, v) => Synth.Envelope.TriggerRelease(t0, v, Release)(t, v);
@@ -75,7 +75,7 @@ namespace Synth
         /// <summary>
         /// Trigger an automatic ADSR cycle of the envelope modulation.
         /// </summary>
-        /// <param name="t0"></param>
+        /// <param name="t0">Start time</param>
         /// <returns></returns>
         public Func<double, byte, byte> TriggerADSR(double t0)
             => Envelope = (t, v) => Synth.Envelope.ADSR(t0, v, t, Attack, Decay, Sustain, SustainDuration, Release)(t, v);
@@ -83,7 +83,7 @@ namespace Synth
         /// <summary>
         /// Final output of this voice.
         /// </summary>
-        /// <param name="t"></param>
+        /// <param name="t">time</param>
         /// <returns></returns>
         public byte Output(double t)
             => Convert.ToByte(Volume * Envelope(t, WaveForm(t, Frequency(t), PulseWidth(t, Frequency(t)))) / MaxValue);
