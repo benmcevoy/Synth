@@ -19,7 +19,7 @@ namespace Synth
         public Func<double, byte> Volume = (t) => 255;
         public Func<double, double, double, byte> WaveForm = Synth.WaveForm.SineWave();
         public Func<double, byte, byte> Envelope = Synth.Envelope.Mute();
-        public Func<double, double, double> PulseWidth = (t, f) => PitchTable.A4(t) / 2;
+        public Func<double, double, double> PulseWidth = (t, f) => 0;
 
         public double Attack = 0.1;
         public double Decay = 0.2;

@@ -13,16 +13,16 @@ namespace Synth.Console
             var voice = new Voice
             {
                 WaveForm = WaveForm.SineWave(),
+                PulseWidth = Pulsator,
                 Attack = 1,
                 Decay = 1,
                 Sustain = 128,
                 Release = 1,
-                Envelope = Envelope.Sustain(128)
+                Envelope = Envelope.Sustain(255),
             };
 
             var pcm = new EightBitPcmStream(sampleRate, voice);
             var device = new Devices.WaveOutDevice(pcm, sampleRate, 1);
-
             var isPlaying = true;
 
             device.Play();
