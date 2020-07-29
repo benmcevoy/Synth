@@ -26,7 +26,7 @@ namespace Synth.UI
 
             Mixer.Volume = 255;
 
-            _voice.Volume = (t) => 255;
+            _voice.Volume = 255;
             _voice.Frequency = PitchTable.C3;
             _voice.WaveForm = WaveForm.Sawtooth();
             _voice.Attack = 1;

@@ -12,13 +12,14 @@ namespace Synth.Console
 
             var voice = new Voice
             {
-                WaveForm = WaveForm.SineWave(),
-                PulseWidth = Pulsator,
-                Attack = 1,
-                Decay = 1,
-                Sustain = 128,
-                Release = 1,
-                Envelope = Envelope.Sustain(255),
+                WaveForm =  WaveForm.SineWave(),
+                Volume = 255,
+                Attack = 0.5,
+                Decay = 0.5,
+                Sustain = 200,
+                SustainDuration = 1,
+                Release = 0.5,
+                //Envelope = (t, v) => WaveForm.SineWave()(t, v, 0),
             };
 
             var pcm = new EightBitPcmStream(sampleRate, voice);
@@ -38,13 +39,13 @@ namespace Synth.Console
                 if (key == ConsoleKey.Escape) break;
 
                 voice.Frequency = ProcessKeyPress(key);
-                voice.TriggerAttack(pcm.Time);
+                voice.TriggerADSR(pcm.Time);
             }
 
             device.Stop();
         }
 
-        public static double Harmonic(double t, double f) => f + (f * 2);
+        public static double Harmonic(double t, double f) => f + (t * 120);
 
         public static double Pulsator(double t, double f) => f + Math.Sin(WaveForm.Angle(t, f));
 

@@ -8,12 +8,13 @@ namespace Synth
 {
     public static class WaveForm
     {
-        public static W W;
-
         public const double TwoPI = 2 * PI;
         public const double HalfPI = PI / 2;
-        public static Random Random = new Random();
         public static double Angle(double t, double f) => TwoPI * f * t;
+
+        private static readonly Random _random = new Random();
+
+        public static byte Random() => ToByte(_random.Next(MinValue, MaxValue + 1));
 
         /// <summary>
         /// Heaviside step function, 0 if negative, 1 if positive.
@@ -22,8 +23,6 @@ namespace Synth
         /// <returns></returns>
         public static int H(double value) => Sign(value) == -1 ? 0 : 1;
 
-        private static byte Offset(double value) => ToByte(128 + value * 127);
-
         /// <summary>
         /// A sinusoidal wave form.
         /// </summary>
@@ -31,7 +30,7 @@ namespace Synth
         public static W SineWave() => (t, f, w) => Offset(Sin(Angle(f, t)));
 
         /// <summary>
-        /// A square wave form that can be modulated by the PulseWidth function.
+        /// A square wave form that can be modulated by the PulseWidth function. Very similar to the pulse waveform.
         /// </summary>
         public static W SquareWave() => (t, f, w) => Offset(Sign(Sin(Angle(f, t)) - Sin(PI * w * t)));
 
@@ -39,7 +38,7 @@ namespace Synth
         /// A random noise wave form generator.
         /// </summary>
         /// <returns></returns>
-        public static W Noise() => (t, f, w) => ToByte(Random.Next(MinValue, MaxValue + 1));
+        public static W Noise() => (t, f, w) => Random();
 
         /// <summary>
         /// A triangle wave form.
@@ -54,7 +53,7 @@ namespace Synth
         public static W Sawtooth() => (t, f, w) => ToByte(MaxValue * (f * t % 0.9));
 
         /// <summary>
-        /// A pulse wave form that can be modulated by the PulseWidth function.
+        /// A pulse wave form that can be modulated by the PulseWidth function.  Very similar to the square waveform.
         /// </summary>
         public static W PulseWave() => (t, f, w) => ToByte(MaxValue * H(Cos(Angle(f, t)) - Cos(PI * w * t)));
 
@@ -75,5 +74,7 @@ namespace Synth
         /// </summary>
         public static W Add(W w1, W w2, W w3, W w4)
             => (t, f, w) => ToByte((w1(t, f, w) + w2(t, f, w) + w3(t, f, w) + w4(t, f, w)) / 4);
+
+        private static byte Offset(double value) => ToByte(128 + value * 127);
     }
 }

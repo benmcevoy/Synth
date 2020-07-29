@@ -32,33 +32,26 @@ namespace Synth
             => (t, v)
                 => MinValue;
 
+        public static E ADSR(double t0, double attack, double decay, byte sustain, double sustainDuration, double release)
+            => (t, v)
+                => !Elapsed(t0, t, attack) ? Attack(t0, attack)(t, v)
+                : !Elapsed(t0 + attack, t, decay) ? Decay(t0 + attack, decay, sustain)(t, v)
+                : !Elapsed(t0 + attack + decay, t, sustainDuration) ? Sustain(sustain)(t, v)
+                : !Elapsed(t0 + attack + decay + release, t, release) ? Release(t0, release, sustain)(t, v)
+                : Mute()(t, v);
+
         internal static E TriggerAttack(double t0, double attack, double decay, byte sustain)
             => (t, v)
-                => AttackState(t0, t, attack, decay) switch
-                    {
-                        1 => Attack(t0, attack)(t, v),
-                        2 => Decay(t0 + attack, decay, sustain)(t, v),
-                        _ => Sustain(sustain)(t, v)
-                    };
+                => !Elapsed(t0, t, attack) ? Attack(t0, attack)(t, v)
+                : !Elapsed(t0 + attack, t, decay) ? Decay(t0 + attack, decay, sustain)(t, v)
+                : Sustain(sustain)(t, v);
 
         internal static E TriggerRelease(double t0, byte sustain, double release)
             => (t, v)
-                => ReleaseState(t0, t, release) switch
-                    {
-                        1 => Release(t0, release, sustain)(t, v),
-                        _ => Mute()(t, v)
-                    };
+                => !Elapsed(t0, t, release) ? Release(t0, release, sustain)(t, v)
+                    : Mute()(t, v);
 
         private static bool Elapsed(double t0, double t, double duration)
             => t - t0 > duration;
-
-        private static int AttackState(double t0, double t, double attack, double decay)
-            => !Elapsed(t0, t, attack) ? 1
-                : !Elapsed(t0 + attack, t, decay) ? 2
-                : int.MaxValue;
-
-        private static int ReleaseState(double t0, double t, double release)
-            => !Elapsed(t0, t, release) ? 1
-                : int.MaxValue;
     }
 }

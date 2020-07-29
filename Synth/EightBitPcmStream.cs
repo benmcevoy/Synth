@@ -8,14 +8,14 @@ namespace Synth
     {
         private readonly double _sampleRate;
         private readonly Voice _voice;
-        private readonly byte[] _prelude;
+        private readonly byte[] _header;
         private long _position;
 
         public EightBitPcmStream(int sampleRate, Voice voice)
         {
             _sampleRate = sampleRate;
             _voice = voice;
-            _prelude = Prelude(sampleRate * 4, 8, sampleRate, 1);
+            _header = Header(sampleRate * 4, 8, sampleRate, 1);
         }
 
         public double Time => _position / _sampleRate;
@@ -24,9 +24,9 @@ namespace Synth
         {
             var counter = 0;
 
-            while (_position < _prelude.Length && _position < count)
+            while (_position < _header.Length && _position < count)
             {
-                buffer[offset + _position] = _prelude[_position];
+                buffer[offset + _position] = _header[_position];
                 _position++;
                 counter++;
             }
@@ -68,7 +68,7 @@ namespace Synth
             set => _position = value;
         }
 
-        private static byte[] Prelude(int dataLength, short bitDepth, int sampleRate, short numberOfChannels)
+        private static byte[] Header(int dataLength, short bitDepth, int sampleRate, short numberOfChannels)
         {
             const short pcm = 1;
             var audioFormatNumberOfChannels = new[] { pcm, numberOfChannels };
