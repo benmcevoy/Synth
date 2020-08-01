@@ -33,7 +33,7 @@ namespace Synth
 
             while (counter < count)
             {
-                buffer[offset + counter] = Mixer.Mix(_position / _sampleRate, _voice);
+                buffer[offset + counter] = _voice.Output(Time);
                 counter++;
                 _position++;
             }

@@ -1,0 +1,77 @@
+﻿<Window x:Class="Synth.Instrument.Monophonic.MainWindow"
+        xmlns="http://schemas.microsoft.com/winfx/2006/xaml/presentation"
+        xmlns:x="http://schemas.microsoft.com/winfx/2006/xaml"
+        xmlns:d="http://schemas.microsoft.com/expression/blend/2008"
+        xmlns:mc="http://schemas.openxmlformats.org/markup-compatibility/2006"
+        mc:Ignorable="d"
+        Title="MainWindow" Height="450" Width="800">
+    <Grid>
+        <Grid.RowDefinitions>
+            <RowDefinition Height="1*" />
+            <RowDefinition Height="1*" />
+        </Grid.RowDefinitions>
+        <Grid.ColumnDefinitions>
+            <ColumnDefinition Width="1*" />
+            <ColumnDefinition Width="1*" />
+            <ColumnDefinition Width="1*" />
+            <ColumnDefinition Width="1*" />
+        </Grid.ColumnDefinitions>
+
+        <StackPanel Grid.Row="0" Grid.Column="0">
+            <Label>WF1</Label>
+            <ComboBox Name="WF1">
+                <ComboBoxItem IsSelected="True">Sine</ComboBoxItem>
+                <ComboBoxItem>Square</ComboBoxItem>
+                <ComboBoxItem>Triangle</ComboBoxItem>
+                <ComboBoxItem>Pulse</ComboBoxItem>
+            </ComboBox>
+
+            <Label>Harmonic</Label>
+            <Slider Name="Harmonic1" Minimum="0" Maximum="4" Interval="1" Value="1"/>
+
+            <Label>Mix volume</Label>
+            <Slider Name="Volume1" Minimum="0" Maximum="255" Interval="1" Value="255"/>
+        </StackPanel>
+
+        <StackPanel Grid.Row="0" Grid.Column="1">
+            <Label>WF2</Label>
+            <ComboBox Name="WF2">
+                <ComboBoxItem>Sine</ComboBoxItem>
+                <ComboBoxItem IsSelected="True">Square</ComboBoxItem>
+                <ComboBoxItem>Triangle</ComboBoxItem>
+                <ComboBoxItem>Pulse</ComboBoxItem>
+            </ComboBox>
+
+            <Label>Harmonic</Label>
+            <Slider Name="Harmonic2" Minimum="0" Maximum="4" Interval="1" Value="2"/>
+
+            <Label>Mix volume</Label>
+            <Slider Name="Volume2" Minimum="0" Maximum="255" Interval="1" Value="128"/>
+        </StackPanel>
+
+        <StackPanel Grid.Row="1" Grid.Column="0">
+            <Label>Attack</Label>
+            <Slider Name="A1" Minimum="0" Maximum="320" Interval="1" Value="0.1"/>
+        </StackPanel>
+
+        <StackPanel Grid.Row="1" Grid.Column="1">
+            <Label>Decay</Label>
+            <Slider Name="D1" Minimum="0.01" Maximum="320" Interval="1" Value="0.1"/>
+        </StackPanel>
+
+        <StackPanel Grid.Row="1" Grid.Column="2">
+            <Label>Sustain level</Label>
+            <Slider Name="S1" Minimum="0" Maximum="255" Interval="1" Value="240"/>
+        </StackPanel>
+
+        <StackPanel Grid.Row="1" Grid.Column="3">
+            <Label>Release</Label>
+            <Slider Name="R1" Minimum="0.01" Maximum="320" Interval="1" Value="0.2"/>
+        </StackPanel>
+
+        <StackPanel Grid.Row="0" Grid.Column="3">
+            <Label>Pulse width</Label>
+            <Slider Name="PW" Minimum="0" Maximum="255" Interval="1"/>
+        </StackPanel>
+    </Grid>
+</Window>

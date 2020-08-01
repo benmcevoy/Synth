@@ -25,8 +25,9 @@ namespace Synth.Devices
             var reader = new BinaryReader(_source);
 
             var file = File.OpenWrite(_fileName);
+            var count = _sampleRate * _durationInSeconds;
 
-            file.Write(reader.ReadBytes(_sampleRate * _durationInSeconds));
+            file.Write(reader.ReadBytes(count), 0, count);
         }
 
         public void Stop()

@@ -18,7 +18,7 @@ namespace Synth
         public static E Decay(double t0, double duration, byte sustain)
             => (t, v)
                 => !Elapsed(t0, t, duration)
-                    ? Convert.ToByte(v * (MaxValue - (sustain * (t - t0))) / MaxValue)
+                    ? Convert.ToByte(v * (sustain - (sustain * (t - t0) / duration)) / MaxValue)
                     : MinValue;
 
         public static E Sustain(byte sustain)
@@ -26,23 +26,20 @@ namespace Synth
                 => v = Convert.ToByte(v * sustain / MaxValue);
 
         public static E Release(double t0, double duration, byte sustain)
-            => (t, v)
-                => !Elapsed(t0, t, duration)
-                    ? Convert.ToByte(v * (sustain - (sustain * (t - t0))) / MaxValue)
-                    : MinValue;
+            => Decay(t0, duration, sustain);
 
         public static E Mute()
             => (t, v)
                 => MinValue;
 
-        public static E ADSR(double t0, byte v0, double t, double attack, double decay, byte sustain, double sustainDuration, double release)
-            =>  !Elapsed(t0, t, attack) ? Attack(t0, attack)
+        public static E TriggerADSR(double t0, double t, double attack, double decay, byte sustain, double sustainDuration, double release)
+            => !Elapsed(t0, t, attack) ? Attack(t0, attack)
                 : !Elapsed(t0 + attack, t, decay) ? Decay(t0 + attack, decay, sustain)
                 : !Elapsed(t0 + attack + decay, t, sustainDuration) ? Sustain(sustain)
                 : !Elapsed(t0 + attack + decay + release, t, release) ? Release(t0, release, sustain)
                 : Mute();
 
-        internal static E TriggerAttack(double t0, byte v0, double attack, double decay, byte sustain)
+        internal static E TriggerAttack(double t0, double attack, double decay, byte sustain)
             => (t, v)
                 => !Elapsed(t0, t, attack) ? Attack(t0, attack)(t, v)
                 : !Elapsed(t0 + attack, t, decay) ? Decay(t0 + attack, decay, sustain)(t, v)

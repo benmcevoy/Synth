@@ -8,17 +8,16 @@ namespace Synth.Console
         {
             const int sampleRate = 44100;
 
-            Mixer.Volume = 255;
 
             var voice = new Voice
             {
-                WaveForm =  WaveForm.SineWave(),
-                Volume = 255,
-                Attack = 0.5,
-                Decay = 0.5,
-                Sustain = 200,
-                SustainDuration = 1,
-                Release = 0.5,
+                WaveForm = WaveForm.Sawtooth(),
+                Volume = () => 255,
+                Attack = () => 0.1,
+                Decay = () => 0.1,
+                SustainLevel = () => 240,
+                SustainDuration = () => 1,
+                Release = () => 0.2,
             };
 
             var pcm = new EightBitPcmStream(sampleRate, voice);
