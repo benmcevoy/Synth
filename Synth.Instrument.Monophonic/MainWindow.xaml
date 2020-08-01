@@ -24,10 +24,11 @@
                 <ComboBoxItem>Square</ComboBoxItem>
                 <ComboBoxItem>Triangle</ComboBoxItem>
                 <ComboBoxItem>Pulse</ComboBoxItem>
+                <ComboBoxItem>Sawtooth</ComboBoxItem>
             </ComboBox>
 
             <Label>Harmonic</Label>
-            <Slider Name="Harmonic1" Minimum="0" Maximum="4" Interval="1" Value="1"/>
+            <Slider Name="Harmonic1" Minimum="0" Maximum="96" IsSnapToTickEnabled="True" Interval="1" Value="12" AutoToolTipPlacement="TopLeft" AutoToolTipPrecision="0" />
 
             <Label>Mix volume</Label>
             <Slider Name="Volume1" Minimum="0" Maximum="255" Interval="1" Value="255"/>
@@ -40,10 +41,11 @@
                 <ComboBoxItem IsSelected="True">Square</ComboBoxItem>
                 <ComboBoxItem>Triangle</ComboBoxItem>
                 <ComboBoxItem>Pulse</ComboBoxItem>
+                <ComboBoxItem>Sawtooth</ComboBoxItem>
             </ComboBox>
 
             <Label>Harmonic</Label>
-            <Slider Name="Harmonic2" Minimum="0" Maximum="4" Interval="1" Value="2"/>
+            <Slider Name="Harmonic2" Minimum="0" Maximum="96" IsSnapToTickEnabled="True" Interval="1" Value="24" AutoToolTipPlacement="TopLeft" AutoToolTipPrecision="0" />
 
             <Label>Mix volume</Label>
             <Slider Name="Volume2" Minimum="0" Maximum="255" Interval="1" Value="128"/>

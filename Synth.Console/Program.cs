@@ -8,7 +8,6 @@ namespace Synth.Console
         {
             const int sampleRate = 44100;
 
-
             var voice = new Voice
             {
                 WaveForm = WaveForm.Sawtooth(),

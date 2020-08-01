@@ -32,6 +32,8 @@ namespace Synth.Instrument.Monophonic
                     "Sine" => Synth.WaveForm.SineWave(harmonic),
                     "Square" => Synth.WaveForm.SquareWave(harmonic),
                     "Triangle" => Synth.WaveForm.Triangle(harmonic),
+                    "Pulse" => Synth.WaveForm.PulseWave(harmonic),
+                    "Sawtooth" => Synth.WaveForm.Sawtooth(harmonic),
                     _ => Synth.WaveForm.SineWave(harmonic)
                 };
 

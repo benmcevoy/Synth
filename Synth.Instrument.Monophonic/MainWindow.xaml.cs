@@ -1,16 +1,10 @@
 ﻿using System;
-using System.Runtime.InteropServices;
 using System.Windows;
 using System.Windows.Input;
 using System.Windows.Threading;
 
 namespace Synth.Instrument.Monophonic
 {
-
-
-    /// <summary>
-    /// Interaction logic for MainWindow.xaml
-    /// </summary>
     public partial class MainWindow : Window
     {
         private readonly EightBitPcmStream _pcm;
@@ -21,8 +15,8 @@ namespace Synth.Instrument.Monophonic
         private readonly KeyboardHookEx _keyboard = new KeyboardHookEx();
 
         // the dispatcher is god damn slow.  Use the state as mediator. then we can update the state 
-        // on a slow cycle (50Hz) and the samplerate can query the state as fast as it can, 
-        // instead of having to go via the dispatcher.
+        // on a slow cycle and the samplerate can query the state as fast as it can, 
+        // instead of having to go via the dispatcher, changing threads, etc.
         private readonly State _state = new State();
 
         public MainWindow()
@@ -32,8 +26,9 @@ namespace Synth.Instrument.Monophonic
             const int sampleRate = 44100;
 
             _pcm = new EightBitPcmStream(sampleRate, _voice);
-            _timer.Interval = TimeSpan.FromTicks(500);
+            _timer.Interval = TimeSpan.FromMilliseconds(20);
 
+            // this "stuff" should be in some class, perhaps the State itself.
             _timer.Tick += (s, e) =>
             {
                 // "push" into state
@@ -45,8 +40,8 @@ namespace Synth.Instrument.Monophonic
                 _state.Volume1 = (byte)Volume1.Value;
                 _state.WF2 = WF2.Text;
                 _state.Volume2 = (byte)Volume2.Value;
-                _state.Harmonic1 = Harmonic1.Value;
-                _state.Harmonic2 = Harmonic2.Value;
+                _state.Harmonic1 = Harmonic1.Value / 12d;
+                _state.Harmonic2 = Harmonic2.Value / 12d;
                 _state.PulseWidth = PW.Value;
             };
 
@@ -55,10 +50,6 @@ namespace Synth.Instrument.Monophonic
 
             var device = new Devices.WaveOutDevice(_pcm, sampleRate, 1);
 
-            device.Play();
-
-            Loaded += MainWindow_Loaded;
-
             // "pull" from state
             _voice.Attack = () => _state.Attack;
             _voice.Decay = () => _state.Decay;
@@ -66,19 +57,21 @@ namespace Synth.Instrument.Monophonic
             _voice.Release = () => _state.Release;
             _voice.WaveForm = (t, f, w) => _state.WaveForm()(t, f, w);
             _voice.PulseWidth = (t, f) => _state.PulseWidth;
-        }
 
-        private void MainWindow_Loaded(object sender, EventArgs e)
-        {
-            Loaded -= MainWindow_Loaded;
+            device.Play();
 
             _timer.Start();
         }
 
         private void MainWindow_KeyUp(object sender, KeyEventArgs e)
         {
+            // NotePriority is the strategy for handling multiple simultaneous key presses in a monophonic instrument
+            // NotePriority should be in a class.  We have scatted the logic for "LastNotePressed" in these key press events :(
+            // other NotePriority strategies include HighestNote and LowestNote 
+            // pop the current key off
             _state.NotePriority.TryPop(out var key1);
 
+            // see if we have another key held down
             if (_state.NotePriority.TryPeek(out var key2))
             {
                 HandleKeyDown(key2);
@@ -88,48 +81,49 @@ namespace Synth.Instrument.Monophonic
             TriggerVoice(_voice, _voice.Frequency, true);
         }
 
-        private void TriggerVoice(Voice voice, Func<double, double> f, bool release = false)
+        private bool TriggerVoice(Voice voice, Func<double, double> f, bool release = false)
         {
-            if (!release)
+            if (release)
             {
-                voice.Frequency = f;
-                voice.TriggerAttack(_pcm.Time);
+                voice.TriggerRelease(_pcm.Time);
+
+                return true;
             }
-            else voice.TriggerRelease(_pcm.Time);
+
+            voice.Frequency = f;
+            voice.TriggerAttack(_pcm.Time);
+
+            return true;
         }
 
         private void MainWindow_KeyDown(object sender, KeyEventArgs e)
         {
             if (_state.NotePriority.TryPeek(out var test))
             {
-                if (test == e.Key) return;
+                // if it's a new key then push onto the stack
+                if (test != e.Key)
+                    _state.NotePriority.Push(e.Key);
             }
-
-            _state.NotePriority.Push(e.Key);
 
             HandleKeyDown(e.Key);
         }
 
-        private void HandleKeyDown(Key key)
+        private bool HandleKeyDown(Key key) => key switch
         {
-            switch (key)
-            {
-                case Key.A: TriggerVoice(_voice, PitchTable.C3); return;
-                case Key.W: TriggerVoice(_voice, PitchTable.Db3); return;
-                case Key.S: TriggerVoice(_voice, PitchTable.D3); return;
-                case Key.E: TriggerVoice(_voice, PitchTable.Eb3); return;
-                case Key.D: TriggerVoice(_voice, PitchTable.E3); return;
-                case Key.F: TriggerVoice(_voice, PitchTable.F3); return;
-                case Key.T: TriggerVoice(_voice, PitchTable.Gb3); return;
-                case Key.G: TriggerVoice(_voice, PitchTable.G3); return;
-                case Key.Y: TriggerVoice(_voice, PitchTable.Ab3); return;
-                case Key.H: TriggerVoice(_voice, PitchTable.A3); return;
-                case Key.U: TriggerVoice(_voice, PitchTable.Bb3); return;
-                case Key.J: TriggerVoice(_voice, PitchTable.B3); return;
-                case Key.K: TriggerVoice(_voice, PitchTable.C4); return;
-
-                default: return;
-            }
-        }
+            Key.A => TriggerVoice(_voice, PitchTable.C3),
+            Key.W => TriggerVoice(_voice, PitchTable.Db3),
+            Key.S => TriggerVoice(_voice, PitchTable.D3),
+            Key.E => TriggerVoice(_voice, PitchTable.Eb3),
+            Key.D => TriggerVoice(_voice, PitchTable.E3),
+            Key.F => TriggerVoice(_voice, PitchTable.F3),
+            Key.T => TriggerVoice(_voice, PitchTable.Gb3),
+            Key.G => TriggerVoice(_voice, PitchTable.G3),
+            Key.Y => TriggerVoice(_voice, PitchTable.Ab3),
+            Key.H => TriggerVoice(_voice, PitchTable.A3),
+            Key.U => TriggerVoice(_voice, PitchTable.Bb3),
+            Key.J => TriggerVoice(_voice, PitchTable.B3),
+            Key.K => TriggerVoice(_voice, PitchTable.C4),
+            _ => false
+        };
     }
 }
