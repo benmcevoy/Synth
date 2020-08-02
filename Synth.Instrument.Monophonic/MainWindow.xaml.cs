@@ -43,6 +43,9 @@ namespace Synth.Instrument.Monophonic
                 _state.Harmonic1 = Harmonic1.Value / 12d;
                 _state.Harmonic2 = Harmonic2.Value / 12d;
                 _state.PulseWidth = PW.Value;
+                _state.LFO = LFO.Value;
+                _state.IsLfoRoutedToHarmonic = ModHarmonic.IsChecked ?? false;
+                _state.IsLfoRoutedToPulseWidth = ModPW.IsChecked ?? false;
             };
 
             _keyboard.KeyDown += MainWindow_KeyDown;
@@ -55,8 +58,8 @@ namespace Synth.Instrument.Monophonic
             _voice.Decay = () => _state.Decay;
             _voice.SustainLevel = () => _state.SustainLevel;
             _voice.Release = () => _state.Release;
-            _voice.WaveForm = (t, f, w) => _state.WaveForm()(t, f, w);
-            _voice.PulseWidth = (t, f) => _state.PulseWidth;
+            _voice.WaveForm = (t, f, w) => _state.WaveForm(t)(t, f, w);
+            _voice.PulseWidth = (t, f) => _state.Modulate(_state.IsLfoRoutedToPulseWidth, t, _state.PulseWidth);
 
             device.Play();
 
@@ -103,6 +106,10 @@ namespace Synth.Instrument.Monophonic
                 // if it's a new key then push onto the stack
                 if (test != e.Key)
                     _state.NotePriority.Push(e.Key);
+            }
+            else
+            {
+                _state.NotePriority.Push(e.Key);
             }
 
             HandleKeyDown(e.Key);

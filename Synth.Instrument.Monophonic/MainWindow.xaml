@@ -5,7 +5,7 @@
         xmlns:mc="http://schemas.openxmlformats.org/markup-compatibility/2006"
         mc:Ignorable="d"
         Title="MainWindow" Height="450" Width="800">
-    <Grid>
+    <Grid Margin="5">
         <Grid.RowDefinitions>
             <RowDefinition Height="1*" />
             <RowDefinition Height="1*" />
@@ -23,7 +23,6 @@
                 <ComboBoxItem IsSelected="True">Sine</ComboBoxItem>
                 <ComboBoxItem>Square</ComboBoxItem>
                 <ComboBoxItem>Triangle</ComboBoxItem>
-                <ComboBoxItem>Pulse</ComboBoxItem>
                 <ComboBoxItem>Sawtooth</ComboBoxItem>
             </ComboBox>
 
@@ -31,7 +30,7 @@
             <Slider Name="Harmonic1" Minimum="0" Maximum="96" IsSnapToTickEnabled="True" Interval="1" Value="12" AutoToolTipPlacement="TopLeft" AutoToolTipPrecision="0" />
 
             <Label>Mix volume</Label>
-            <Slider Name="Volume1" Minimum="0" Maximum="255" Interval="1" Value="255"/>
+            <Slider Name="Volume1" Minimum="0" Maximum="255" Interval="1" Value="255" AutoToolTipPlacement="TopLeft" AutoToolTipPrecision="0"/>
         </StackPanel>
 
         <StackPanel Grid.Row="0" Grid.Column="1">
@@ -40,7 +39,6 @@
                 <ComboBoxItem>Sine</ComboBoxItem>
                 <ComboBoxItem IsSelected="True">Square</ComboBoxItem>
                 <ComboBoxItem>Triangle</ComboBoxItem>
-                <ComboBoxItem>Pulse</ComboBoxItem>
                 <ComboBoxItem>Sawtooth</ComboBoxItem>
             </ComboBox>
 
@@ -48,32 +46,42 @@
             <Slider Name="Harmonic2" Minimum="0" Maximum="96" IsSnapToTickEnabled="True" Interval="1" Value="24" AutoToolTipPlacement="TopLeft" AutoToolTipPrecision="0" />
 
             <Label>Mix volume</Label>
-            <Slider Name="Volume2" Minimum="0" Maximum="255" Interval="1" Value="128"/>
+            <Slider Name="Volume2" Minimum="0" Maximum="255" Interval="1" Value="128" AutoToolTipPlacement="TopLeft" AutoToolTipPrecision="0"/>
+        </StackPanel>
+
+        <StackPanel Grid.Row="0" Grid.Column="2">
+            <Label>LFO</Label>
+            <Slider Name="LFO" Minimum="0" Maximum="64" Interval="1" Value="1" AutoToolTipPlacement="TopLeft" AutoToolTipPrecision="0"/>
+
+            <CheckBox Name="ModPW" >Modulate Pulsewidth</CheckBox>
+            <CheckBox Name="ModHarmonic">Modulate harmonic wf2</CheckBox>
+
+
         </StackPanel>
 
         <StackPanel Grid.Row="1" Grid.Column="0">
             <Label>Attack</Label>
-            <Slider Name="A1" Minimum="0" Maximum="320" Interval="1" Value="0.1"/>
+            <Slider Name="A1" Minimum="0" Maximum="320" Interval="1" Value="0.1" AutoToolTipPlacement="TopLeft" AutoToolTipPrecision="0"/>
         </StackPanel>
 
         <StackPanel Grid.Row="1" Grid.Column="1">
             <Label>Decay</Label>
-            <Slider Name="D1" Minimum="0.01" Maximum="320" Interval="1" Value="0.1"/>
+            <Slider Name="D1" Minimum="0.01" Maximum="320" Interval="1" Value="0.1" AutoToolTipPlacement="TopLeft" AutoToolTipPrecision="0"/>
         </StackPanel>
 
         <StackPanel Grid.Row="1" Grid.Column="2">
             <Label>Sustain level</Label>
-            <Slider Name="S1" Minimum="0" Maximum="255" Interval="1" Value="240"/>
+            <Slider Name="S1" Minimum="0" Maximum="255" Interval="1" Value="240" AutoToolTipPlacement="TopLeft" AutoToolTipPrecision="0"/>
         </StackPanel>
 
         <StackPanel Grid.Row="1" Grid.Column="3">
             <Label>Release</Label>
-            <Slider Name="R1" Minimum="0.01" Maximum="320" Interval="1" Value="0.2"/>
+            <Slider Name="R1" Minimum="0.01" Maximum="320" Interval="1" Value="0.2" AutoToolTipPlacement="TopLeft" AutoToolTipPrecision="0"/>
         </StackPanel>
 
         <StackPanel Grid.Row="0" Grid.Column="3">
             <Label>Pulse width</Label>
-            <Slider Name="PW" Minimum="0" Maximum="255" Interval="1"/>
+            <Slider Name="PW" Minimum="0" Maximum="255" Interval="1" AutoToolTipPlacement="TopLeft" AutoToolTipPrecision="0"/>
         </StackPanel>
     </Grid>
 </Window>

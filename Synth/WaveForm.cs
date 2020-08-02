@@ -27,13 +27,6 @@ namespace Synth
         public static byte Random() => ToByte(_random.Next(MinValue, MaxValue + 1));
 
         /// <summary>
-        /// Heaviside step function, 0 if negative, 1 if positive.
-        /// </summary>
-        /// <param name="value"></param>
-        /// <returns></returns>
-        public static int H(double value) => Sign(value) == -1 ? 0 : 1;
-
-        /// <summary>
         /// A sinusoidal wave form.
         /// </summary>
         /// <returns></returns>
@@ -61,11 +54,6 @@ namespace Synth
         /// </summary>
         /// <returns></returns>
         public static W Sawtooth(double harmonic = 1) => (t, f, w) => ToByte(MaxValue * (f * harmonic * t % 0.9));
-
-        /// <summary>
-        /// A pulse wave form that can be modulated by the PulseWidth function.  Very similar to the square waveform.
-        /// </summary>
-        public static W PulseWave(double harmonic = 1) => (t, f, w) => ToByte(MaxValue * H(Cos(Angle(f * harmonic, t)) - Cos(PI * w * t)));
 
         /// <summary>
         /// Combine multiple waveforms by addition to produce a new wave form.
