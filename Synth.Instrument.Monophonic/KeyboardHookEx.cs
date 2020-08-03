@@ -28,7 +28,9 @@ namespace Synth.Instrument.Monophonic
         public EventHandler<KeyEventArgs> KeyDown;
         public EventHandler<KeyEventArgs> KeyUp;
 
-        private int _currentKey;
+        private static readonly object _lock = new object();
+        private long _currentKey;
+        
 
         public KeyboardHookEx()
         {
@@ -58,25 +60,27 @@ namespace Synth.Instrument.Monophonic
 
         private IntPtr HookCallback(int nCode, IntPtr wParam, IntPtr lParam)
         {
-            int vkCode = Marshal.ReadInt32(lParam);
-
-            if (nCode >= 0 && wParam == (IntPtr)WM_KEYDOWN)
+            lock (_lock)
             {
-                // skip key repeats
-                if (_currentKey == vkCode) return CallNextHookEx(_hookID, nCode, wParam, lParam); ;
+                int vkCode = Marshal.ReadInt32(lParam);
 
-                _currentKey = vkCode;
+                if (nCode >= 0 && wParam == (IntPtr)WM_KEYDOWN)
+                {
+                    // skip key repeats
+                    if (_currentKey == vkCode) return CallNextHookEx(_hookID, nCode, wParam, lParam); ;
 
-                KeyDown?.Invoke(this, new KeyEventArgs(KeyInterop.KeyFromVirtualKey(vkCode)));
+                    _currentKey = vkCode;
+
+                    KeyDown?.Invoke(this, new KeyEventArgs(KeyInterop.KeyFromVirtualKey(vkCode)));
+                }
+
+                if (nCode >= 0 && wParam == (IntPtr)WM_KEYUP)
+                {
+                    _currentKey = -1;
+
+                    KeyUp?.Invoke(this, new KeyEventArgs(KeyInterop.KeyFromVirtualKey(vkCode)));
+                }
             }
-
-            if (nCode >= 0 && wParam == (IntPtr)WM_KEYUP)
-            {
-                _currentKey = 0;
-
-                KeyUp?.Invoke(this, new KeyEventArgs(KeyInterop.KeyFromVirtualKey(vkCode)));
-            }
-
             return CallNextHookEx(_hookID, nCode, wParam, lParam);
         }
 

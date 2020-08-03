@@ -10,13 +10,13 @@ namespace Synth.Console
 
             var voice = new Voice
             {
-                WaveForm = WaveForm.Sawtooth(),
+                WaveForm = WaveForm.SineWave(),
                 Volume = () => 255,
-                Attack = () => 0.1,
-                Decay = () => 0.1,
-                SustainLevel = () => 240,
+                Attack = () => 1,
+                Decay = () => 1,
+                SustainLevel = () => 64,
                 SustainDuration = () => 1,
-                Release = () => 0.2,
+                Release = () => 1,
             };
 
             var pcm = new EightBitPcmStream(sampleRate, voice);
@@ -66,5 +66,3 @@ namespace Synth.Console
             };
     }
 }
-
-

@@ -84,7 +84,7 @@ namespace Synth
         /// <param name="t0">Start time</param>
         /// <returns></returns>
         public Func<double, byte, byte> TriggerRelease(double t0)
-            => Envelope = (t, v) => Synth.Envelope.TriggerRelease(t0, v, Release())(t, v);
+            => Envelope = (t, v) => Synth.Envelope.TriggerRelease(t0, SustainLevel(), Release())(t, v);
 
         /// <summary>
         /// Trigger an automatic ADSR cycle of the envelope modulation.

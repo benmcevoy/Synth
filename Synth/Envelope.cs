@@ -11,46 +11,53 @@ namespace Synth
         // also need to be able to abandon the current 
         public static E Attack(double t0, double duration)
             => (t, v)
-                => !Elapsed(t0, t, duration)
-                    ? Convert.ToByte(v * (v * (t - t0)) / MaxValue)
+                => !HasElapsed(t0, t, duration)
+                    ? Convert.ToByte(v * Elapsed(t0, t, duration))
                     : MaxValue;
 
         public static E Decay(double t0, double duration, byte sustain)
             => (t, v)
-                => !Elapsed(t0, t, duration)
-                    ? Convert.ToByte(v * (sustain - (sustain * (t - t0) / duration)) / MaxValue)
-                    : MinValue;
+                => !HasElapsed(t0, t, duration)
+                    ? Convert.ToByte(v - v * Elapsed(t0, t, duration) * (MaxValue - sustain) / MaxValue)
+                    : sustain;
 
         public static E Sustain(byte sustain)
             => (t, v)
                 => v = Convert.ToByte(v * sustain / MaxValue);
 
         public static E Release(double t0, double duration, byte sustain)
-            => Decay(t0, duration, sustain);
+             => (t, v)
+                => !HasElapsed(t0, t, duration)
+                    ? Convert.ToByte(v * ((-sustain * Elapsed(t0, t, duration) + sustain) / MaxValue))
+                    : MinValue;
 
         public static E Mute()
             => (t, v)
                 => MinValue;
 
         public static E TriggerADSR(double t0, double t, double attack, double decay, byte sustain, double sustainDuration, double release)
-            => !Elapsed(t0, t, attack) ? Attack(t0, attack)
-                : !Elapsed(t0 + attack, t, decay) ? Decay(t0 + attack, decay, sustain)
-                : !Elapsed(t0 + attack + decay, t, sustainDuration) ? Sustain(sustain)
-                : !Elapsed(t0 + attack + decay + release, t, release) ? Release(t0, release, sustain)
+            => !HasElapsed(t0, t, attack) ? Attack(t0, attack)
+                : !HasElapsed(t0 + attack, t, decay) ? Decay(t0 + attack, decay, sustain)
+                : !HasElapsed(t0 + attack + decay, t, sustainDuration) ? Sustain(sustain)
+                : !HasElapsed(t0 + attack + decay + sustainDuration, t, release) ? Release(t0 + attack + decay + sustainDuration, release, sustain)
                 : Mute();
 
         internal static E TriggerAttack(double t0, double attack, double decay, byte sustain)
             => (t, v)
-                => !Elapsed(t0, t, attack) ? Attack(t0, attack)(t, v)
-                : !Elapsed(t0 + attack, t, decay) ? Decay(t0 + attack, decay, sustain)(t, v)
+                => !HasElapsed(t0, t, attack) ? Attack(t0, attack)(t, v)
+                : !HasElapsed(t0 + attack, t, decay) ? Decay(t0 + attack, decay, sustain)(t, v)
                 : Sustain(sustain)(t, v);
 
-        internal static E TriggerRelease(double t0, byte v0, double release)
+        internal static E TriggerRelease(double t0, byte sustain, double release)
             => (t, v)
-                => !Elapsed(t0, t, release) ? Release(t0, release, v0)(t, v)
+                => !HasElapsed(t0, t, release) 
+                    ? Release(t0, release, sustain)(t, v)
                     : Mute()(t, v);
 
-        private static bool Elapsed(double t0, double t, double duration)
-            => t - t0 > duration;
+        private static bool HasElapsed(double t0, double t, double duration)
+            => duration <= 0 || Elapsed(t0, t, duration) >= 1;
+
+        private static double Elapsed(double t0, double t, double duration)
+            => (t - t0) / duration;
     }
 }

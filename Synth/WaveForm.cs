@@ -79,7 +79,7 @@ namespace Synth
             => (t, f, w) => ToByte((w1(t, f, w) + w2(t, f, w) + w3(t, f, w) + w4(t, f, w)) / 4);
 
         /// <summary>
-        /// Scale doubles in the range -1:1 to 8 bit unsigned bytes in the range 0:255.
+        /// Map doubles in the range -1:1 to 8 bit unsigned bytes in the range 0:255.
         /// </summary>
         private static byte Offset(double value) => ToByte(128 + value * 127);
     }

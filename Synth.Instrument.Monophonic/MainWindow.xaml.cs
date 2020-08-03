@@ -66,71 +66,49 @@ namespace Synth.Instrument.Monophonic
             _timer.Start();
         }
 
+        private void MainWindow_KeyDown(object sender, KeyEventArgs e)
+        {
+            _state.NotePriority.Push(e.Key);
+
+            _voice.Frequency = HandleKeyDown(e.Key);
+            _voice.TriggerAttack(_pcm.Time);
+        }
+
         private void MainWindow_KeyUp(object sender, KeyEventArgs e)
         {
             // NotePriority is the strategy for handling multiple simultaneous key presses in a monophonic instrument
             // NotePriority should be in a class.  We have scatted the logic for "LastNotePressed" in these key press events :(
             // other NotePriority strategies include HighestNote and LowestNote 
             // pop the current key off
-            _state.NotePriority.TryPop(out var key1);
+            _state.NotePriority.TryPop(out _);
 
-            // see if we have another key held down
-            if (_state.NotePriority.TryPeek(out var key2))
+            // see if we had another key held down
+            if (_state.NotePriority.TryPeek(out var key))
             {
-                HandleKeyDown(key2);
+                _voice.Frequency = HandleKeyDown(key);
+                _voice.TriggerAttack(_pcm.Time);
                 return;
             }
 
-            TriggerVoice(_voice, _voice.Frequency, true);
+            _voice.TriggerRelease(_pcm.Time);
         }
 
-        private bool TriggerVoice(Voice voice, Func<double, double> f, bool release = false)
+        private Func<double, double> HandleKeyDown(Key key) => key switch
         {
-            if (release)
-            {
-                voice.TriggerRelease(_pcm.Time);
-
-                return true;
-            }
-
-            voice.Frequency = f;
-            voice.TriggerAttack(_pcm.Time);
-
-            return true;
-        }
-
-        private void MainWindow_KeyDown(object sender, KeyEventArgs e)
-        {
-            if (_state.NotePriority.TryPeek(out var test))
-            {
-                // if it's a new key then push onto the stack
-                if (test != e.Key)
-                    _state.NotePriority.Push(e.Key);
-            }
-            else
-            {
-                _state.NotePriority.Push(e.Key);
-            }
-
-            HandleKeyDown(e.Key);
-        }
-
-        private bool HandleKeyDown(Key key) => key switch
-        {
-            Key.A => TriggerVoice(_voice, PitchTable.C3),
-            Key.W => TriggerVoice(_voice, PitchTable.Db3),
-            Key.S => TriggerVoice(_voice, PitchTable.D3),
-            Key.E => TriggerVoice(_voice, PitchTable.Eb3),
-            Key.D => TriggerVoice(_voice, PitchTable.E3),
-            Key.F => TriggerVoice(_voice, PitchTable.F3),
-            Key.T => TriggerVoice(_voice, PitchTable.Gb3),
-            Key.G => TriggerVoice(_voice, PitchTable.G3),
-            Key.Y => TriggerVoice(_voice, PitchTable.Ab3),
-            Key.H => TriggerVoice(_voice, PitchTable.A3),
-            Key.U => TriggerVoice(_voice, PitchTable.Bb3),
-            Key.J => TriggerVoice(_voice, PitchTable.B3),
-            Key.K => TriggerVoice(_voice, PitchTable.C4),
-            _ => false
+            Key.A => PitchTable.C3,
+            Key.W => PitchTable.Db3,
+            Key.S => PitchTable.D3,
+            Key.E => PitchTable.Eb3,
+            Key.D => PitchTable.E3,
+            Key.F => PitchTable.F3,
+            Key.T => PitchTable.Gb3,
+            Key.G => PitchTable.G3,
+            Key.Y => PitchTable.Ab3,
+            Key.H => PitchTable.A3,
+            Key.U => PitchTable.Bb3,
+            Key.J => PitchTable.B3,
+            Key.K => PitchTable.C4,
+            _ => _voice.Frequency
         };
     }
 }
