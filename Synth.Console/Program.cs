@@ -8,17 +8,7 @@ namespace Synth.Console
         {
             const int sampleRate = 44100;
 
-            var voice = new Voice
-            {
-                WaveForm = WaveForm.SineWave(),
-                Volume = () => 255,
-                Attack = () => 1,
-                Decay = () => 1,
-                SustainLevel = () => 64,
-                SustainDuration = () => 1,
-                Release = () => 1,
-            };
-
+            var voice = new Voice();
             var pcm = new EightBitPcmStream(sampleRate, voice);
             var device = new Devices.WaveOutDevice(pcm, sampleRate, 1);
             var isPlaying = true;

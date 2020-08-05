@@ -5,20 +5,6 @@ namespace Synth
 {
     public class Voice
     {
-        //private static readonly VoiceRegisters _state = new VoiceRegisters();
-
-        //public class VoiceRegisters
-        //{
-        //    public double Attack;
-        //    public double Decay;
-        //    public byte Sustain;
-        //    public double Release;
-        //    public double PulseWidth;
-        //    public double Frequency;
-        //}
-
-        //public Func<VoiceRegisters> Registers = () => _state;
-
         /// <summary>
         /// The overall voice volume. 
         /// </summary>
