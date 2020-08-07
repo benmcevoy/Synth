@@ -9,4 +9,10 @@
     <ProjectReference Include="..\Synth\Synth.csproj" />
   </ItemGroup>
 
+  <ItemGroup>
+    <None Update="sample.wav">
+      <CopyToOutputDirectory>Always</CopyToOutputDirectory>
+    </None>
+  </ItemGroup>
+
 </Project>

@@ -43,7 +43,7 @@ namespace Synth
         /// <summary>
         /// The sustain volume level.
         /// </summary>
-        public Func<byte> SustainLevel = () => 255;
+        public Func<byte> SustainLevel = () => 200;
 
         /// <summary>
         /// The sustain duration. 1.0 is equal to 1 second.  Sustain duration is only used when TriggerADSR is called.

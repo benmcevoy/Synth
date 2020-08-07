@@ -1,4 +1,5 @@
 ﻿using System;
+using System.IO;
 
 namespace Synth.Console
 {
@@ -9,6 +10,11 @@ namespace Synth.Console
             const int sampleRate = 44100;
 
             var voice = new Voice();
+
+            // lol
+            //voice.WaveForm = new ExampleSamplePlayerWaveForm(File.Open("sample.wav", FileMode.Open), sampleRate, sampleRate, PitchTable.G3(0))
+            //    .Sample(1);
+
             var pcm = new EightBitPcmStream(sampleRate, voice);
             var device = new Devices.WaveOutDevice(pcm, sampleRate, 1);
             var isPlaying = true;
