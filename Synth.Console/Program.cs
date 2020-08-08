@@ -1,5 +1,4 @@
 ﻿using System;
-using System.IO;
 
 namespace Synth.Console
 {
@@ -9,7 +8,14 @@ namespace Synth.Console
         {
             const int sampleRate = 44100;
 
-            var voice = new Voice();
+            var voice = new Voice
+            {
+                Attack = () => 1,
+                Decay = () => 0.5,
+                Release = () => 0.5,
+                SustainLevel = () => 200
+            };
+
 
             // lol
             //voice.WaveForm = new ExampleSamplePlayerWaveForm(File.Open("sample.wav", FileMode.Open), sampleRate, sampleRate, PitchTable.G3(0))
@@ -23,8 +29,6 @@ namespace Synth.Console
 
             while (isPlaying)
             {
-                // we have reached the limit of console app without hooking WM_ messages
-                // WPF version has key up/down to control ADSR... although I am still writing that...
                 if (!System.Console.KeyAvailable) continue;
 
                 var key = System.Console.ReadKey().Key;
@@ -32,7 +36,9 @@ namespace Synth.Console
                 if (key == ConsoleKey.Escape) break;
 
                 voice.Frequency = ProcessKeyPress(key);
-                voice.TriggerADSR(pcm.Time);
+                voice.TriggerADSR();
+
+                System.Console.WriteLine(voice.VoiceOutput.Envelope);
             }
 
             device.Stop();

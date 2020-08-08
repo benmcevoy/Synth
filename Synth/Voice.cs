@@ -21,9 +21,9 @@ namespace Synth
         public Func<double, double, double, byte> WaveForm = Synth.WaveForm.SineWave();
 
         /// <summary>
-        /// Produce the next volume value for the current time and current volume.
+        /// Produce the next envelope value for the current time and current envelope value.
         /// </summary>
-        public Func<double, byte, byte> Envelope = Synth.Envelope.Mute();
+        public Func<double, double> Envelope = Synth.Envelope.Mute();
 
         /// <summary>
         /// Produce a pulsewidth value from the current time and frequency. Pulse width can be used to modulate waveforms.
@@ -41,15 +41,15 @@ namespace Synth
         public Func<double> Decay = () => 0.1;
 
         /// <summary>
-        /// The sustain volume level.
+        /// The sustain volume level ranges from 0 to 1.
         /// </summary>
-        public Func<byte> SustainLevel = () => 200;
+        public Func<byte> SustainLevel = () => 240;
 
         /// <summary>
         /// The sustain duration. 1.0 is equal to 1 second.  Sustain duration is only used when TriggerADSR is called.
         /// </summary>
         /// <remarks>Sustain duration is useful when gating is unavailable to trigger the release phase, such as in a sequencer or "programmed" music.</remarks>
-        public Func<double> SustainDuration = () => 1;
+        public Func<double> SustainDuration = () => 0.5;
 
         /// <summary>
         /// The release duration. 1.0 is equal to 1 second.
@@ -61,31 +61,50 @@ namespace Synth
         /// </summary>
         /// <param name="t0">Start time</param>
         /// <returns></returns>
-        public Func<double, byte, byte> TriggerAttack(double t0)
-            => Envelope = (t, v) => Synth.Envelope.TriggerAttack(t0, Attack(), Decay(), SustainLevel())(t, v);
+        public Func<double, double> TriggerAttack()
+            => Envelope = Synth.Envelope.TriggerAttack(VoiceOutput.Time, VoiceOutput.Envelope, Attack(), Decay(), SustainLevel());
 
         /// <summary>
         /// Trigger the release phase of the envelope modulation.
         /// </summary>
         /// <param name="t0">Start time</param>
         /// <returns></returns>
-        public Func<double, byte, byte> TriggerRelease(double t0)
-            => Envelope = (t, v) => Synth.Envelope.TriggerRelease(t0, SustainLevel(), Release())(t, v);
+        public Func<double, double> TriggerRelease()
+            => Envelope = Synth.Envelope.TriggerRelease(VoiceOutput.Time, VoiceOutput.Envelope, SustainLevel(), Release());
 
         /// <summary>
         /// Trigger an automatic ADSR cycle of the envelope modulation.
         /// </summary>
         /// <param name="t0">Start time</param>
         /// <returns></returns>
-        public Func<double, byte, byte> TriggerADSR(double t0)
-            => Envelope = (t, v) => Synth.Envelope.TriggerADSR(t0, t, Attack(), Decay(), SustainLevel(), SustainDuration(), Release())(t, v);
+        public Func<double, double> TriggerADSR()
+            => Envelope = Synth.Envelope.TriggerADSR(VoiceOutput.Time, VoiceOutput.Envelope, Attack(), Decay(), SustainLevel(), SustainDuration(), Release());
 
         /// <summary>
         /// Final output of this voice.
         /// </summary>
         /// <returns></returns>
-        public byte Output(double t)
-            => Convert.ToByte(Volume() * Envelope(t, WaveForm(t, Frequency(t), PulseWidth(t, Frequency(t)))) / MaxValue);
+        public VoiceOutput Output(double t)
+            => VoiceOutput = new VoiceOutput(
+                Convert.ToByte(Volume() * Envelope(t) * WaveForm(t, Frequency(t), PulseWidth(t, Frequency(t))) / MaxValue),
+                Envelope(t),
+                t);
+
+        public VoiceOutput VoiceOutput = new VoiceOutput(0, 0, 0);
+    }
+
+    public struct VoiceOutput
+    {
+        public VoiceOutput(byte output, double envelope, double time)
+        {
+            Out = output;
+            Envelope = envelope;
+            Time = time;
+        }
+
+        public byte Out;
+        public double Envelope;
+        public double Time;
     }
 }
 

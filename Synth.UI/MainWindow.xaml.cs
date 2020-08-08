@@ -59,7 +59,7 @@ namespace Synth.UI
                 StrokeThickness = 0.8,
                 X1 = _drawX,
                 X2 = _drawX,
-                Y2 = 300 - _voice.Output(_pcm.Time),
+                Y2 = 300 - _voice.Output(_pcm.Time).Out,
                 Y1 = 300
             };
 
@@ -78,9 +78,9 @@ namespace Synth.UI
             if (attack)
             {
                 voice.Frequency = f;
-                voice.TriggerAttack(_pcm.Time);
+                voice.TriggerAttack();
             }
-            else voice.TriggerRelease(_pcm.Time);
+            else voice.TriggerRelease();
         }
 
         private void MainWindow_KeyDown(object sender, KeyEventArgs e)

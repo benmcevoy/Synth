@@ -33,7 +33,7 @@ namespace Synth
 
             while (counter < count)
             {
-                buffer[offset + counter] = _voice.Output(Time);
+                buffer[offset + counter] = _voice.Output(Time).Out;
                 counter++;
                 _position++;
             }
@@ -91,9 +91,7 @@ namespace Synth
         }
 
         private static int Append(ref byte[] target, string value, int offset)
-        {
-            return Append(ref target, Encoding.ASCII.GetBytes(value), offset);
-        }
+            => Append(ref target, Encoding.ASCII.GetBytes(value), offset);
 
         private static int Append(ref byte[] target, byte[] value, int offset)
         {

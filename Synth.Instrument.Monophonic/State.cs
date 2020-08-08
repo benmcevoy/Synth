@@ -47,6 +47,6 @@ namespace Synth.Instrument.Monophonic
 
         private static Func<double, double, double, byte> WaveFormVolume(Func<double, double, double, byte> wave, byte volume)
             => (t, f, w)
-            => Envelope.Sustain(wave(t, f, w))(t, volume);
+            => (byte)(Amplitude.Normalize(volume) * wave(t, f, w));
     }
 }

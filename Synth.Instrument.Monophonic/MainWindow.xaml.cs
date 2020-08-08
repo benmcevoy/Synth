@@ -26,7 +26,7 @@ namespace Synth.Instrument.Monophonic
             const int sampleRate = 44100;
 
             _pcm = new EightBitPcmStream(sampleRate, _voice);
-            _timer.Interval = TimeSpan.FromMilliseconds(20);
+            _timer.Interval = TimeSpan.FromMilliseconds(10);
 
             // this "stuff" should be in some class, perhaps the State itself.
             _timer.Tick += (s, e) =>
@@ -68,10 +68,15 @@ namespace Synth.Instrument.Monophonic
 
         private void MainWindow_KeyDown(object sender, KeyEventArgs e)
         {
+            //if (_state.NotePriority.TryPeek(out var key))
+            //{
+            //    if (key == e.Key) return;
+            //}
+
             _state.NotePriority.Push(e.Key);
 
             _voice.Frequency = HandleKeyDown(e.Key);
-            _voice.TriggerAttack(_pcm.Time);
+            _voice.TriggerAttack();
         }
 
         private void MainWindow_KeyUp(object sender, KeyEventArgs e)
@@ -86,11 +91,11 @@ namespace Synth.Instrument.Monophonic
             if (_state.NotePriority.TryPeek(out var key))
             {
                 _voice.Frequency = HandleKeyDown(key);
-                _voice.TriggerAttack(_pcm.Time);
+                _voice.Envelope = Envelope.Sustain(_voice.SustainLevel());
                 return;
             }
 
-            _voice.TriggerRelease(_pcm.Time);
+            _voice.TriggerRelease();
         }
 
         private Func<double, double> HandleKeyDown(Key key) => key switch

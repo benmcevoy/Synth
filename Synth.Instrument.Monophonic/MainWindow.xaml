@@ -51,8 +51,7 @@
 
         <StackPanel Grid.Row="0" Grid.Column="2">
             <Label>LFO</Label>
-            <Slider Name="LFO" Minimum="0" Maximum="64" Interval="1" Value="1" AutoToolTipPlacement="TopLeft" AutoToolTipPrecision="0"/>
-
+            <Slider Name="LFO" Minimum="0" Maximum="64" SmallChange="0.01"  Value="0.1" AutoToolTipPlacement="TopLeft" AutoToolTipPrecision="5"/>
             <CheckBox Name="ModPW" >Modulate Pulsewidth</CheckBox>
             <CheckBox Name="ModHarmonic">Modulate harmonic wf2</CheckBox>
 
@@ -61,12 +60,12 @@
 
         <StackPanel Grid.Row="1" Grid.Column="0">
             <Label>Attack</Label>
-            <Slider Name="A1" Minimum="0" Maximum="320" Interval="1" Value="0.1" AutoToolTipPlacement="TopLeft" AutoToolTipPrecision="0"/>
+            <Slider Name="A1" Minimum="0" Maximum="320" Interval="1" Value="0.1" AutoToolTipPlacement="TopLeft" AutoToolTipPrecision="5"/>
         </StackPanel>
 
         <StackPanel Grid.Row="1" Grid.Column="1">
             <Label>Decay</Label>
-            <Slider Name="D1" Minimum="0.01" Maximum="320" Interval="1" Value="0.1" AutoToolTipPlacement="TopLeft" AutoToolTipPrecision="0"/>
+            <Slider Name="D1" Minimum="0.01" Maximum="320" Interval="1" Value="0.1" AutoToolTipPlacement="TopLeft" AutoToolTipPrecision="5"/>
         </StackPanel>
 
         <StackPanel Grid.Row="1" Grid.Column="2">
