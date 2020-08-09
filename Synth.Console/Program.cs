@@ -10,16 +10,17 @@ namespace Synth.Console
 
             var voice = new Voice
             {
-                Attack = () => 1,
-                Decay = () => 0.5,
-                Release = () => 0.5,
-                SustainLevel = () => 200
+                Attack = () => 0.01,
+                Decay = () => 0.01,
+                Release = () => 0.01,
+                SustainLevel = () => 200,
+                SustainDuration = () => 0.3
             };
 
-
             // lol
-            //voice.WaveForm = new ExampleSamplePlayerWaveForm(File.Open("sample.wav", FileMode.Open), sampleRate, sampleRate, PitchTable.G3(0))
-            //    .Sample(1);
+            //var sample = System.IO.File.Open("Korg-01W-16Ft-Piano-C3.wav", System.IO.FileMode.Open);
+            //voice.WaveForm = new ExampleSamplePlayerWaveForm(sample, sampleRate, sampleRate, PitchTable.C3(0))
+            //    .Sample();
 
             var pcm = new EightBitPcmStream(sampleRate, voice);
             var device = new Devices.WaveOutDevice(pcm, sampleRate, 1);
@@ -37,8 +38,6 @@ namespace Synth.Console
 
                 voice.Frequency = ProcessKeyPress(key);
                 voice.TriggerADSR();
-
-                System.Console.WriteLine(voice.VoiceOutput.Envelope);
             }
 
             device.Stop();

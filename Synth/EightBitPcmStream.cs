@@ -1,5 +1,6 @@
 ﻿using System;
 using System.IO;
+using System.Runtime.InteropServices;
 using System.Text;
 
 namespace Synth
@@ -9,7 +10,6 @@ namespace Synth
         private readonly double _sampleRate;
         private readonly Voice _voice;
         private readonly byte[] _header;
-        private long _position;
 
         public EightBitPcmStream(int sampleRate, Voice voice)
         {
@@ -18,16 +18,16 @@ namespace Synth
             _header = Header(sampleRate * 4, 8, sampleRate, 1);
         }
 
-        public double Time => _position / _sampleRate;
+        public double Time => Position / _sampleRate;
 
         public override int Read(byte[] buffer, int offset, int count)
         {
             var counter = 0;
 
-            while (_position < _header.Length && _position < count)
+            while (Position < _header.Length && Position < count)
             {
-                buffer[offset + _position] = _header[_position];
-                _position++;
+                buffer[offset + Position] = _header[Position];
+                Position++;
                 counter++;
             }
 
@@ -35,38 +35,16 @@ namespace Synth
             {
                 buffer[offset + counter] = _voice.Output(Time).Out;
                 counter++;
-                _position++;
+                Position++;
             }
 
             return counter;
         }
 
-        public override void Flush() { }
         public override long Seek(long offset, SeekOrigin origin)
-        {
-            if (origin == SeekOrigin.Begin)
-            {
-                _position = 0;
-                return _position;
-            }
-
-            _position += offset;
-
-            return _position;
-        }
-
-        public override void SetLength(long value) { }
-        public override void Write(byte[] buffer, int offset, int count) { }
-        public override bool CanRead { get; } = true;
-        public override bool CanSeek { get; } = true;
-        public override bool CanWrite { get; } = false;
-        public override long Length { get; }
-
-        public override long Position
-        {
-            get => _position;
-            set => _position = value;
-        }
+            => Position = (origin == SeekOrigin.Begin)
+                ? Position = 0
+                : Position += offset;
 
         private static byte[] Header(int dataLength, short bitDepth, int sampleRate, short numberOfChannels)
         {
@@ -90,79 +68,31 @@ namespace Synth
             return output;
         }
 
+        private static int Append<T>(ref byte[] target, T source, int offset)
+            => Append(ref target, new T[] { source }, offset);
+
         private static int Append(ref byte[] target, string value, int offset)
             => Append(ref target, Encoding.ASCII.GetBytes(value), offset);
 
-        private static int Append(ref byte[] target, byte[] value, int offset)
-        {
-            var count = value.Length;
+        private static int SizeOf<T>(T[] value)
+            => value.Length * Marshal.SizeOf(value[0]);
 
-            Buffer.BlockCopy(value, 0, target, offset, count);
+        private static int Append<T>(ref byte[] target, T[] source, int offset)
+        {
+            var count = SizeOf(source);
+
+            Buffer.BlockCopy(source, 0, target, offset, count);
 
             return count;
         }
 
-        private static int Append(ref byte[] target, short[] value, int offset)
-        {
-            var count = value.Length * sizeof(short);
-
-            Buffer.BlockCopy(value, 0, target, offset, count);
-
-            return count;
-        }
-
-        private static int Append(ref byte[] target, int[] value, int offset)
-        {
-            var count = value.Length * sizeof(int);
-
-            Buffer.BlockCopy(value, 0, target, offset, count);
-
-            return count;
-        }
-
-        private static int Append(ref byte[] target, long[] value, int offset)
-        {
-            var count = value.Length * sizeof(long);
-
-            Buffer.BlockCopy(value, 0, target, offset, count);
-
-            return count;
-        }
-
-        private static int Append(ref byte[] target, byte value, int offset)
-        {
-            const int count = sizeof(byte);
-
-            Buffer.BlockCopy(BitConverter.GetBytes(value), 0, target, offset, sizeof(byte));
-
-            return count;
-        }
-
-        private static int Append(ref byte[] target, short value, int offset)
-        {
-            const int count = sizeof(short);
-
-            Buffer.BlockCopy(BitConverter.GetBytes(value), 0, target, offset, count);
-
-            return count;
-        }
-
-        private static int Append(ref byte[] target, long value, int offset)
-        {
-            const int count = sizeof(long);
-
-            Buffer.BlockCopy(BitConverter.GetBytes(value), 0, target, offset, count);
-
-            return count;
-        }
-
-        private static int Append(ref byte[] target, int value, int offset)
-        {
-            const int count = sizeof(int);
-
-            Buffer.BlockCopy(BitConverter.GetBytes(value), 0, target, offset, count);
-
-            return count;
-        }
+        public override long Position { get; set; }
+        public override void Flush() { }
+        public override void SetLength(long value) { }
+        public override void Write(byte[] buffer, int offset, int count) { }
+        public override bool CanRead { get; } = true;
+        public override bool CanSeek { get; } = true;
+        public override bool CanWrite { get; } = false;
+        public override long Length { get; }
     }
 }
