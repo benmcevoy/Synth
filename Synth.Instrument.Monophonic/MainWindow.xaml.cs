@@ -44,7 +44,7 @@ namespace Synth.Instrument.Monophonic
                 _state.Volume1 = (byte)Volume1.Value;
                 _state.WF2 = WF2.Text;
                 _state.Volume2 = (byte)Volume2.Value;
-                _state.Harmonic1 = Harmonic1.Value / 12d + Harmonic1Fine.Value / 200d;
+                _state.Harmonic1 = Harmonic1.Value / 12d + Harmonic1Fine.Value;
                 _state.Harmonic2 = Harmonic2.Value / 12d + Harmonic2Fine.Value;
                 _state.PulseWidth = PW.Value;
                 _state.LFO = LFO.Value;

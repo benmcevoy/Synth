@@ -1,7 +1,7 @@
-﻿using System;
-using static System.Convert;
+﻿using static System.Convert;
 using static System.Math;
 using static System.Byte;
+using static Synth.Amplitude;
 using W = System.Func<double, double, double, byte>;
 using Synth.Noise;
 
@@ -53,7 +53,7 @@ namespace Synth
            => (t, f, w) => ToByte(w1(t, f, w) * w2(t, f, w) / MaxValue);
 
         public static W Detune(W w1, W w2, double r)
-           => (t, f, w) => ToByte((w1(t, (1 + r) * f, w) + w2(t, (1 - r) * f, w)) / 2);
+           => (t, f, w) => ToByte(Constrain(w1(t, (1 + r) * f, w) + w2(t, (1 - r) * f, w)));
 
         /// <summary>
         /// Combine multiple waveforms by addition to produce a new wave form.
@@ -64,19 +64,19 @@ namespace Synth
         /// Combine multiple waveforms by addition to produce a new wave form.
         /// </summary>
         public static W Add(W w1, W w2)
-            => (t, f, w) => ToByte((w1(t, f, w) + w2(t, f, w)) / 2);
+            => (t, f, w) => ToByte(Constrain(w1(t, f, w) + w2(t, f, w)));
 
         /// <summary>
         /// Combine multiple waveforms by addition to produce a new wave form.
         /// </summary>
         public static W Add(W w1, W w2, W w3)
-            => (t, f, w) => ToByte((w1(t, f, w) + w2(t, f, w) + w3(t, f, w)) / 3);
+            => (t, f, w) => ToByte(Constrain(w1(t, f, w) + w2(t, f, w) + w3(t, f, w)));
 
         /// <summary>
         /// Combine multiple waveforms by addition to produce a new wave form.
         /// </summary>
         public static W Add(W w1, W w2, W w3, W w4)
-            => (t, f, w) => ToByte((w1(t, f, w) + w2(t, f, w) + w3(t, f, w) + w4(t, f, w)) / 4);
+            => (t, f, w) => ToByte(Constrain(w1(t, f, w) + w2(t, f, w) + w3(t, f, w) + w4(t, f, w)));
 
         /// <summary>
         /// Map doubles in the range -1:1 to 8 bit unsigned bytes in the range 0:255.
