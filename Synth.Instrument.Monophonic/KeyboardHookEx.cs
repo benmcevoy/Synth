@@ -72,6 +72,8 @@ namespace Synth.Instrument.Monophonic
                     _currentKey = vkCode;
 
                     KeyDown?.Invoke(this, new KeyEventArgs(KeyInterop.KeyFromVirtualKey(vkCode)));
+
+                    return CallNextHookEx(_hookID, nCode, wParam, lParam);
                 }
 
                 if (nCode >= 0 && wParam == (IntPtr)WM_KEYUP)
@@ -79,8 +81,11 @@ namespace Synth.Instrument.Monophonic
                     _currentKey = -1;
 
                     KeyUp?.Invoke(this, new KeyEventArgs(KeyInterop.KeyFromVirtualKey(vkCode)));
+
+                    return CallNextHookEx(_hookID, nCode, wParam, lParam);
                 }
             }
+
             return CallNextHookEx(_hookID, nCode, wParam, lParam);
         }
 

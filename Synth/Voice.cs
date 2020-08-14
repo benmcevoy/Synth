@@ -1,4 +1,6 @@
 ﻿using System;
+using Synth.Envelope;
+using Synth.Frequency;
 using static System.Byte;
 
 namespace Synth
@@ -23,7 +25,7 @@ namespace Synth
         /// <summary>
         /// Produce the next envelope value for the current time and current envelope value.
         /// </summary>
-        public Func<double, double> Envelope = Synth.Envelope.Mute();
+        public Func<double, double> Envelope = EnvelopeGenerator.Mute();
 
         /// <summary>
         /// Produce a pulsewidth value from the current time and frequency. Pulse width can be used to modulate waveforms.
@@ -62,7 +64,7 @@ namespace Synth
         /// <param name="t0">Start time</param>
         /// <returns></returns>
         public Func<double, double> TriggerAttack()
-            => Envelope = Synth.Envelope.TriggerAttack(VoiceOutput.Time, VoiceOutput.Envelope, Attack(), Decay(), SustainLevel());
+            => Envelope = EnvelopeGenerator.TriggerAttack(VoiceOutput.Time, VoiceOutput.Envelope, Attack(), Decay(), SustainLevel());
 
         /// <summary>
         /// Trigger the release phase of the envelope modulation.
@@ -70,7 +72,7 @@ namespace Synth
         /// <param name="t0">Start time</param>
         /// <returns></returns>
         public Func<double, double> TriggerRelease()
-            => Envelope = Synth.Envelope.TriggerRelease(VoiceOutput.Time, VoiceOutput.Envelope, SustainLevel(), Release());
+            => Envelope = EnvelopeGenerator.TriggerRelease(VoiceOutput.Time, VoiceOutput.Envelope, SustainLevel(), Release());
 
         /// <summary>
         /// Trigger an automatic ADSR cycle of the envelope modulation.
@@ -78,33 +80,29 @@ namespace Synth
         /// <param name="t0">Start time</param>
         /// <returns></returns>
         public Func<double, double> TriggerADSR()
-            => Envelope = Synth.Envelope.TriggerADSR(VoiceOutput.Time, VoiceOutput.Envelope, Attack(), Decay(), SustainLevel(), SustainDuration(), Release());
+            => Envelope = EnvelopeGenerator.TriggerADSR(VoiceOutput.Time, VoiceOutput.Envelope, Attack(), Decay(), SustainLevel(), SustainDuration(), Release());
+
+        public Func<double, byte> Feedback = (t) => 0;
 
         /// <summary>
         /// Final output of this voice.
         /// </summary>
         /// <returns></returns>
         public VoiceOutput Output(double t)
-            => VoiceOutput = new VoiceOutput(
-                Convert.ToByte(Volume() * Envelope(t) * WaveForm(t, Frequency(t), PulseWidth(t, Frequency(t))) / MaxValue),
-                Envelope(t),
-                t);
-
-        public VoiceOutput VoiceOutput = new VoiceOutput(0, 0, 0);
-    }
-
-    public struct VoiceOutput
-    {
-        public VoiceOutput(byte output, double envelope, double time)
         {
-            Out = output;
-            Envelope = envelope;
-            Time = time;
+            VoiceOutput = new VoiceOutput(
+                  Convert.ToByte((Feedback(t) + (Volume() * Envelope(t) * WaveForm(t, Frequency(t), PulseWidth(t, Frequency(t))) / MaxValue))/2),
+                  Envelope(t),
+                  t);
+
+            DelayLine.Write(VoiceOutput.Out);
+
+            return VoiceOutput;
         }
 
-        public byte Out;
-        public double Envelope;
-        public double Time;
+        public VoiceOutput VoiceOutput = new VoiceOutput(0, 0, 0);
+
+        public CircularBuffer DelayLine = new CircularBuffer(4 * 44100, 44100);
     }
 }
 

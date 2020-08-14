@@ -2,7 +2,7 @@
 using static System.Math;
 using static Synth.Time;
 
-namespace Synth
+namespace Synth.Envelope
 {
     public class Easings
     {
@@ -13,8 +13,6 @@ namespace Synth
         // linear
         // ease (of which there are many variations)
         // https://easings.net/ thanks you
-
-        // oh good, mx+c a line
 
         /// <summary>
         /// Linear ease. By setting start > end will ease out, e.g. decay.

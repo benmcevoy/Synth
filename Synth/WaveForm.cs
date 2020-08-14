@@ -3,6 +3,7 @@ using static System.Convert;
 using static System.Math;
 using static System.Byte;
 using W = System.Func<double, double, double, byte>;
+using Synth.Noise;
 
 namespace Synth
 {
@@ -19,13 +20,6 @@ namespace Synth
         /// <returns></returns>
         public static double Angle(double t, double f) => TwoPI * f * t;
 
-        private static readonly Random _random = new Random();
-        /// <summary>
-        /// Random byte in the range 0:255
-        /// </summary>
-        /// <returns></returns>
-        public static byte Random() => ToByte(_random.Next(MinValue, MaxValue + 1));
-
         /// <summary>
         /// A sinusoidal wave form.
         /// </summary>
@@ -41,7 +35,7 @@ namespace Synth
         /// A random noise wave form generator.
         /// </summary>
         /// <returns></returns>
-        public static W Noise() => (t, f, w) => Random();
+        public static W Noise(INoiseGenerator noiseGenerator = null) => (noiseGenerator ?? new WhiteNoiseGenerator()).Next();
 
         /// <summary>
         /// A triangle wave form.
@@ -54,6 +48,12 @@ namespace Synth
         /// </summary>
         /// <returns></returns>
         public static W Sawtooth(double harmonic = 1) => (t, f, w) => ToByte(MaxValue * (f * harmonic * t % 0.9));
+
+        public static W RingModulate(W w1, W w2)
+           => (t, f, w) => ToByte(w1(t, f, w) * w2(t, f, w) / MaxValue);
+
+        public static W Detune(W w1, W w2, double r)
+           => (t, f, w) => ToByte((w1(t, (1 + r) * f, w) + w2(t, (1 - r) * f, w)) / 2);
 
         /// <summary>
         /// Combine multiple waveforms by addition to produce a new wave form.

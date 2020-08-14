@@ -1,4 +1,5 @@
 ﻿using System;
+using Synth.Frequency;
 
 namespace Synth.Console
 {
@@ -10,22 +11,29 @@ namespace Synth.Console
 
             var voice = new Voice
             {
-                Attack = () => 0.01,
-                Decay = () => 0.01,
-                Release = () => 0.01,
-                SustainLevel = () => 200,
-                SustainDuration = () => 0.3
+                Volume = () => 160,
+                Attack = () => 0.2,
+                Decay = () => 0,
+                Release = () => 0.2,
+                SustainLevel = () => 240,
+                SustainDuration = () => 0.5
             };
 
             // lol
-            //var sample = System.IO.File.Open("Korg-01W-16Ft-Piano-C3.wav", System.IO.FileMode.Open);
-            //voice.WaveForm = new ExampleSamplePlayerWaveForm(sample, sampleRate, sampleRate, PitchTable.C3(0))
-            //    .Sample();
+            var sample = System.IO.File.Open("slow-drum-loop.wav", System.IO.FileMode.Open);
+            voice.WaveForm = new ExampleSamplePlayerWaveForm(sample, sampleRate, sampleRate, PitchTable.C3(0))
+                .Sample();
+
+            //ExampleWaveFormsModifiers.Arpeggio(WaveForm.Triangle(), pcm.Time, Arpeggio.Foo);
+
 
             var pcm = new EightBitPcmStream(sampleRate, voice);
             var device = new Devices.WaveOutDevice(pcm, sampleRate, 1);
             var isPlaying = true;
 
+            voice.DelayLine.Delay = () => 0.5;
+            voice.Feedback = (t) => voice.DelayLine.Read();
+            
             device.Play();
 
             while (isPlaying)
@@ -37,6 +45,7 @@ namespace Synth.Console
                 if (key == ConsoleKey.Escape) break;
 
                 voice.Frequency = ProcessKeyPress(key);
+                //voice.WaveForm = ExampleWaveFormsModifiers.Arpeggio(WaveForm.SquareWave(), pcm.Time, Arpeggio.Nice);
                 voice.TriggerADSR();
             }
 

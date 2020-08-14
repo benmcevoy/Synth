@@ -3,6 +3,8 @@ using System.Windows;
 using System.Windows.Input;
 using System.Windows.Threading;
 
+using Synth.Frequency;
+
 namespace Synth.Instrument.Monophonic
 {
     public partial class MainWindow : Window
@@ -40,12 +42,15 @@ namespace Synth.Instrument.Monophonic
                 _state.Volume1 = (byte)Volume1.Value;
                 _state.WF2 = WF2.Text;
                 _state.Volume2 = (byte)Volume2.Value;
-                _state.Harmonic1 = Harmonic1.Value / 12d;
-                _state.Harmonic2 = Harmonic2.Value / 12d;
+                _state.Harmonic1 = Harmonic1.Value / 12d + Harmonic1Fine.Value / 200d;
+                _state.Harmonic2 = Harmonic2.Value / 12d + Harmonic2Fine.Value;
                 _state.PulseWidth = PW.Value;
                 _state.LFO = LFO.Value;
                 _state.IsLfoRoutedToHarmonic = ModHarmonic.IsChecked ?? false;
                 _state.IsLfoRoutedToPulseWidth = ModPW.IsChecked ?? false;
+                _state.IsLfoRingModulate = RingMod.IsChecked ?? false;
+                _state.Delay = Delay.Value;
+                _state.DelayFeedback = DelayFeedback.Value;
             };
 
             _keyboard.KeyDown += MainWindow_KeyDown;
@@ -60,6 +65,10 @@ namespace Synth.Instrument.Monophonic
             _voice.Release = () => _state.Release;
             _voice.WaveForm = (t, f, w) => _state.WaveForm(t)(t, f, w);
             _voice.PulseWidth = (t, f) => _state.Modulate(_state.IsLfoRoutedToPulseWidth, t, _state.PulseWidth);
+            _voice.DelayLine.Delay = () => _state.Delay;
+            _voice.DelayLine.Feedback = () => _state.DelayFeedback;
+
+            _voice.Feedback = (t) => _voice.DelayLine.Read();
 
             device.Play();
 
@@ -68,13 +77,7 @@ namespace Synth.Instrument.Monophonic
 
         private void MainWindow_KeyDown(object sender, KeyEventArgs e)
         {
-            //if (_state.NotePriority.TryPeek(out var key))
-            //{
-            //    if (key == e.Key) return;
-            //}
-
             _state.NotePriority.Push(e.Key);
-
             _voice.Frequency = HandleKeyDown(e.Key);
             _voice.TriggerAttack();
         }
@@ -82,16 +85,24 @@ namespace Synth.Instrument.Monophonic
         private void MainWindow_KeyUp(object sender, KeyEventArgs e)
         {
             // NotePriority is the strategy for handling multiple simultaneous key presses in a monophonic instrument
-            // NotePriority should be in a class.  We have scatted the logic for "LastNotePressed" in these key press events :(
+            // NotePriority should be in a class.  We have scattered the logic for "LastNotePressed" in these key press events :(
             // other NotePriority strategies include HighestNote and LowestNote 
             // pop the current key off
-            _state.NotePriority.TryPop(out _);
+
+            // this implementation is whacky :)
+            _state.NotePriority.TryPop(out var currentKey);
+
+            if (currentKey != e.Key)
+            {
+                _voice.TriggerRelease();
+                return;
+            }
 
             // see if we had another key held down
             if (_state.NotePriority.TryPeek(out var key))
             {
                 _voice.Frequency = HandleKeyDown(key);
-                _voice.Envelope = Envelope.Sustain(_voice.SustainLevel());
+                _voice.Envelope = Envelope.EnvelopeGenerator.Sustain(_voice.SustainLevel());
                 return;
             }
 

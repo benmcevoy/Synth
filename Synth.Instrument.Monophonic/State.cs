@@ -21,19 +21,27 @@ namespace Synth.Instrument.Monophonic
         public byte SustainLevel = 240;
         public double Release = 0.1;
 
+        public double Delay = 0;
+        public double DelayFeedback = 0;
+
         public double LFO;
         public bool IsLfoRoutedToPulseWidth;
         public bool IsLfoRoutedToHarmonic;
+        public bool IsLfoRingModulate;
 
         public double Modulate(bool enabled, double t, double f)
             => enabled
-                ? Synth.WaveForm.SineWave()(t, LFO, 0)
+                ? Synth.WaveForm.SineWave()(t, f + LFO, 0)
                 : f;
 
         public Func<double, double, double, byte> WaveForm(double t)
-            => Synth.WaveForm.Add(
-                WaveFormVolume(FromName(WF1, Harmonic1), Volume1),
-                WaveFormVolume(FromName(WF2, Modulate(IsLfoRoutedToHarmonic, t, Harmonic2)), Volume2));
+            => IsLfoRingModulate
+                ? Synth.WaveForm.Detune(
+                    WaveFormVolume(FromName(WF1, Harmonic1), Volume1),
+                    WaveFormVolume(FromName(WF2, Modulate(IsLfoRoutedToHarmonic, t, Harmonic2)), Volume2), LFO)
+                : Synth.WaveForm.Add(
+                    WaveFormVolume(FromName(WF1, Harmonic1), Volume1),
+                    WaveFormVolume(FromName(WF2, Modulate(IsLfoRoutedToHarmonic, t, Harmonic2)), Volume2));
 
         private static Func<double, double, double, byte> FromName(string name, double harmonic)
             => name switch
@@ -42,6 +50,7 @@ namespace Synth.Instrument.Monophonic
                 "Square" => Synth.WaveForm.SquareWave(harmonic),
                 "Triangle" => Synth.WaveForm.Triangle(harmonic),
                 "Sawtooth" => Synth.WaveForm.Sawtooth(harmonic),
+                "Noise" => Synth.WaveForm.Noise(new Noise.PitchedNoiseGenerator()),
                 _ => Synth.WaveForm.SineWave(harmonic)
             };
 
@@ -50,3 +59,4 @@ namespace Synth.Instrument.Monophonic
             => (byte)(Amplitude.Normalize(volume) * wave(t, f, w));
     }
 }
+
