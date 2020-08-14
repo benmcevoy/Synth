@@ -65,10 +65,6 @@ namespace Synth.Instrument.Monophonic
             _voice.Release = () => _state.Release;
             _voice.WaveForm = (t, f, w) => _state.WaveForm(t)(t, f, w);
             _voice.PulseWidth = (t, f) => _state.Modulate(_state.IsLfoRoutedToPulseWidth, t, _state.PulseWidth);
-            _voice.DelayLine.Delay = () => _state.Delay;
-            _voice.DelayLine.Feedback = () => _state.DelayFeedback;
-
-            _voice.Feedback = (t) => _voice.DelayLine.Read();
 
             device.Play();
 

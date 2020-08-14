@@ -82,27 +82,18 @@ namespace Synth
         public Func<double, double> TriggerADSR()
             => Envelope = EnvelopeGenerator.TriggerADSR(VoiceOutput.Time, VoiceOutput.Envelope, Attack(), Decay(), SustainLevel(), SustainDuration(), Release());
 
-        public Func<double, byte> Feedback = (t) => 0;
-
         /// <summary>
         /// Final output of this voice.
         /// </summary>
         /// <returns></returns>
-        public VoiceOutput Output(double t)
-        {
-            VoiceOutput = new VoiceOutput(
-                  Convert.ToByte((Feedback(t) + (Volume() * Envelope(t) * WaveForm(t, Frequency(t), PulseWidth(t, Frequency(t))) / MaxValue))/2),
+        public virtual VoiceOutput Output(double t)
+            => VoiceOutput = new VoiceOutput(
+                  Convert.ToByte(Volume() * Envelope(t) * WaveForm(t, Frequency(t), PulseWidth(t, Frequency(t))) / MaxValue),
                   Envelope(t),
                   t);
 
-            DelayLine.Write(VoiceOutput.Out);
-
-            return VoiceOutput;
-        }
 
         public VoiceOutput VoiceOutput = new VoiceOutput(0, 0, 0);
-
-        public CircularBuffer DelayLine = new CircularBuffer(4 * 44100, 44100);
     }
 }
 

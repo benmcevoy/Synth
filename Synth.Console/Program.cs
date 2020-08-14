@@ -9,7 +9,7 @@ namespace Synth.Console
         {
             const int sampleRate = 44100;
 
-            var voice = new Voice
+            var voice = new ExampleVoiceWithDelay(sampleRate)
             {
                 Volume = () => 160,
                 Attack = () => 0.2,
@@ -20,19 +20,17 @@ namespace Synth.Console
             };
 
             // lol
-            var sample = System.IO.File.Open("slow-drum-loop.wav", System.IO.FileMode.Open);
-            voice.WaveForm = new ExampleSamplePlayerWaveForm(sample, sampleRate, sampleRate, PitchTable.C3(0))
-                .Sample();
+            //var sample = System.IO.File.Open("slow-drum-loop.wav", System.IO.FileMode.Open);
+            //voice.WaveForm = new ExampleSamplePlayerWaveForm(sample, sampleRate, sampleRate, PitchTable.C3(0))
+            //    .Sample();
 
             //ExampleWaveFormsModifiers.Arpeggio(WaveForm.Triangle(), pcm.Time, Arpeggio.Foo);
 
+            
 
             var pcm = new EightBitPcmStream(sampleRate, voice);
             var device = new Devices.WaveOutDevice(pcm, sampleRate, 1);
             var isPlaying = true;
-
-            voice.DelayLine.Delay = () => 0.5;
-            voice.Feedback = (t) => voice.DelayLine.Read();
             
             device.Play();
 
@@ -45,7 +43,7 @@ namespace Synth.Console
                 if (key == ConsoleKey.Escape) break;
 
                 voice.Frequency = ProcessKeyPress(key);
-                //voice.WaveForm = ExampleWaveFormsModifiers.Arpeggio(WaveForm.SquareWave(), pcm.Time, Arpeggio.Nice);
+                voice.WaveForm = ExampleWaveFormsModifiers.Arpeggio(WaveForm.Triangle(0.5), pcm.Time, Arpeggio.Nice);
                 voice.TriggerADSR();
             }
 
