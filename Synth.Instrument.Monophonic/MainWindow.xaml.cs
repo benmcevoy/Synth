@@ -10,7 +10,7 @@ namespace Synth.Instrument.Monophonic
     public partial class MainWindow : Window
     {
         private readonly EightBitPcmStream _pcm;
-        private readonly Voice _voice = new Voice();
+        private readonly ExampleVoiceWithDelay _voice;
         private readonly DispatcherTimer _timer = new DispatcherTimer();
 
         // System.Windows whatever this is is tooooo slow.
@@ -26,6 +26,8 @@ namespace Synth.Instrument.Monophonic
             InitializeComponent();
 
             const int sampleRate = 44100;
+
+            _voice = new ExampleVoiceWithDelay(sampleRate);
 
             _pcm = new EightBitPcmStream(sampleRate, _voice);
             _timer.Interval = TimeSpan.FromMilliseconds(10);
@@ -65,6 +67,9 @@ namespace Synth.Instrument.Monophonic
             _voice.Release = () => _state.Release;
             _voice.WaveForm = (t, f, w) => _state.WaveForm(t)(t, f, w);
             _voice.PulseWidth = (t, f) => _state.Modulate(_state.IsLfoRoutedToPulseWidth, t, _state.PulseWidth);
+
+            _voice.Delay = () => _state.Delay;
+            _voice.DelayFeedback = () => _state.DelayFeedback;
 
             device.Play();
 
