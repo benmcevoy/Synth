@@ -12,6 +12,8 @@
         public byte Out;
         public double Envelope;
         public double Time;
+
+        public VoiceOutput With(byte output) => new VoiceOutput(output, Envelope, Time);
     }
 }
 

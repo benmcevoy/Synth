@@ -10,7 +10,7 @@ namespace Synth.Instrument.Monophonic
     public partial class MainWindow : Window
     {
         private readonly EightBitPcmStream _pcm;
-        private readonly ExampleVoiceWithDelay _voice;
+        private readonly ExampleVoiceWithFilter _voice;
         private readonly DispatcherTimer _timer = new DispatcherTimer();
 
         // System.Windows whatever this is is tooooo slow.
@@ -27,7 +27,7 @@ namespace Synth.Instrument.Monophonic
 
             const int sampleRate = 44100;
 
-            _voice = new ExampleVoiceWithDelay(sampleRate);
+            _voice = new ExampleVoiceWithFilter(sampleRate);
 
             _pcm = new EightBitPcmStream(sampleRate, _voice);
             _timer.Interval = TimeSpan.FromMilliseconds(10);
@@ -53,6 +53,8 @@ namespace Synth.Instrument.Monophonic
                 _state.IsLfoRingModulate = RingMod.IsChecked ?? false;
                 _state.Delay = Delay.Value;
                 _state.DelayFeedback = DelayFeedback.Value;
+                _state.FilterFrequency= FilterFrequency.Value;
+                _state.FilterResonance = FilterResonance.Value;
             };
 
             _keyboard.KeyDown += MainWindow_KeyDown;
@@ -68,8 +70,8 @@ namespace Synth.Instrument.Monophonic
             _voice.WaveForm = (t, f, w) => _state.WaveForm(t)(t, f, w);
             _voice.PulseWidth = (t, f) => _state.Modulate(_state.IsLfoRoutedToPulseWidth, t, _state.PulseWidth);
 
-            _voice.Delay = () => _state.Delay;
-            _voice.DelayFeedback = () => _state.DelayFeedback;
+            _voice.FilterFrequency = (t) => _state.FilterFrequency;
+            _voice.FilterResonance = (t) => _state.FilterResonance;
 
             device.Play();
 

@@ -22,7 +22,7 @@ namespace Synth.Console
             _buffer.Write(Convert.ToByte(Amplitude.Constrain(inputSample + outputSample * DelayFeedback())));
             _buffer.Delay = Delay();
 
-            return new VoiceOutput(Convert.ToByte(Amplitude.Constrain(inputSample + outputSample)), @out.Envelope, @out.Time);
+            return @out.With(Convert.ToByte(Amplitude.Constrain(inputSample + outputSample)));
         }
     }
 }

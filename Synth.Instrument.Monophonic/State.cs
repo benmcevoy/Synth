@@ -22,7 +22,10 @@ namespace Synth.Instrument.Monophonic
         public double Release = 0.1;
 
         public double Delay = 0;
-        public double DelayFeedback = 0;
+        public double DelayFeedback =0;
+
+        public double FilterFrequency = 1000;
+        public double FilterResonance = 0.7;
 
         public double LFO;
         public bool IsLfoRoutedToPulseWidth;

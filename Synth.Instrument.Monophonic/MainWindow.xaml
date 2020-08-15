@@ -63,6 +63,10 @@
             <CheckBox Name="ModHarmonic">Modulate harmonic wf2</CheckBox>
             <CheckBox Name="RingMod">Ring modulate wf2> wf1</CheckBox>
 
+            <Label>Pulse width</Label>
+            <Slider Name="PW" Minimum="0" Maximum="255" Interval="1" AutoToolTipPlacement="TopLeft" AutoToolTipPrecision="0"/>
+
+
         </StackPanel>
 
         <StackPanel Grid.Row="1" Grid.Column="0">
@@ -86,13 +90,16 @@
         </StackPanel>
 
         <StackPanel Grid.Row="0" Grid.Column="3">
-            <Label>Pulse width</Label>
-            <Slider Name="PW" Minimum="0" Maximum="255" Interval="1" AutoToolTipPlacement="TopLeft" AutoToolTipPrecision="0"/>
-
+            
             <Label>Delay</Label>
             <Slider Name="Delay" Minimum="0" Maximum="4" SmallChange="0.001" LargeChange="0.001" AutoToolTipPlacement="TopLeft" AutoToolTipPrecision="3"/>
             <Label>Delay Feedback</Label>
             <Slider Name="DelayFeedback" Minimum="0" Maximum="0.95" SmallChange="0.001" LargeChange="0.1" AutoToolTipPlacement="TopLeft" AutoToolTipPrecision="5"/>
+
+            <Label>Filter</Label>
+            <Slider Name="FilterFrequency" Minimum="100" Maximum="5000" Value="1000" SmallChange="0.001" LargeChange="0.001" AutoToolTipPlacement="TopLeft" AutoToolTipPrecision="3"/>
+            <Label>Resonance</Label>
+            <Slider Name="FilterResonance" Minimum="0.5" Maximum="10" Value="0.7" SmallChange="0.001" LargeChange="0.1" AutoToolTipPlacement="TopLeft" AutoToolTipPrecision="5"/>
         </StackPanel>
     </Grid>
 </Window>

@@ -9,7 +9,7 @@ namespace Synth.Console
         {
             const int sampleRate = 44100;
 
-            var voice = new ExampleVoiceWithDelay(sampleRate)
+            var voice = new ExampleVoiceWithFilter(sampleRate)
             {
                 Volume = () => 128,
                 Attack = () => 0.2,
@@ -17,14 +17,14 @@ namespace Synth.Console
                 Release = () => 0.2,
                 SustainLevel = () => 240,
                 SustainDuration = () => 1,
-                Delay = () => 0.15,
-                DelayFeedback = () => 0.5
+                FilterFrequency = (t) => Harmonic(t,1000),
+                FilterResonance = (t) => 1
             };
 
             // lol
-            var sample = System.IO.File.Open("slow-drum-loop.wav", System.IO.FileMode.Open);
-            voice.WaveForm = new ExampleSamplePlayerWaveForm(sample, sampleRate, sampleRate, PitchTable.C3(0))
-                .Sample();
+            //var sample = System.IO.File.Open("guitar-loop.wav", System.IO.FileMode.Open);
+            //voice.WaveForm = new ExampleSamplePlayerWaveForm(sample, sampleRate, sampleRate, PitchTable.C3(0))
+            //    .Sample();
 
             //ExampleWaveFormsModifiers.Arpeggio(WaveForm.Triangle(), pcm.Time, Arpeggio.Foo);
 
@@ -33,7 +33,7 @@ namespace Synth.Console
             var pcm = new EightBitPcmStream(sampleRate, voice);
             var device = new Devices.WaveOutDevice(pcm, sampleRate, 1);
             var isPlaying = true;
-            
+
             device.Play();
 
             while (isPlaying)
@@ -45,7 +45,7 @@ namespace Synth.Console
                 if (key == ConsoleKey.Escape) break;
 
                 voice.Frequency = ProcessKeyPress(key);
-                //voice.WaveForm = ExampleWaveFormsModifiers.Arpeggio(WaveForm.Triangle(0.5), pcm.Time, Arpeggio.Nice, 0.2);
+                voice.WaveForm = ExampleWaveFormsModifiers.Arpeggio(WaveForm.Triangle(0.5), pcm.Time, Arpeggio.Nice, 0.2);
                 voice.TriggerADSR();
             }
 
