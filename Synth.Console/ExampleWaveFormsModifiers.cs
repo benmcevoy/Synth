@@ -1,5 +1,6 @@
 ﻿using System;
 using Synth.Frequency;
+using Synth.Noise;
 using static System.Math;
 using W = System.Func<double, double, double, byte>;
 
@@ -14,21 +15,47 @@ namespace Synth.Console
 
         // would be nice to have it go up/down
         // want to get rid of the t0
-        public static W Arpeggio(W wave, double t0, int[] scale, double speed = 0.1)
+        // Arpeggiator - up/down/pingpong/random
+        public static W Arpeggio(W wave, double t0, int[] scale, double speed = 0.1, ArpeggioDirection direction = ArpeggioDirection.Up)
         => (t, f, w)
-            => wave(t, Pitch.FromReference(f, scale[Limit(Quantize(t0, t, speed), scale.Length - 1)])(t), w);
+            => direction switch
+            {
+                ArpeggioDirection.Up => wave(t, Pitch.FromReference(f, scale[Up(t0, t, 1 / speed, scale.Length)])(t), w),
+                ArpeggioDirection.Down => wave(t, Pitch.FromReference(f, scale[Down(t0, t, 1 / speed, scale.Length - 1)])(t), w),
+                ArpeggioDirection.PingPong => wave(t, Pitch.FromReference(f, scale[PingPong(t0, t, 1 / speed, scale.Length - 1)])(t), w),
+                ArpeggioDirection.Random => wave(t, Pitch.FromReference(f, scale[Random(t0, t, 1 / speed, scale.Length - 1)])(t), w),
+                _ => wave(t, f, w)
+            };
 
-        private static int Quantize(double t0, double t, double speed)
-            => (int)Floor(speed + ((t - t0) / speed));
+        private static int Up(double t0, double t, double speed, int length)
+            => (int)Floor((t - t0) / speed % length);
 
-        private static int Limit(int value, int limit)
-            => value >= limit ? limit : value;
+        private static int Down(double t0, double t, double speed, int length)
+            => (int)Floor((t - t0) / speed % length);
+
+        private static int PingPong(double t0, double t, double speed, int length)
+            => (int)Floor((t - t0) / speed % length);
+
+        // so naive - needs to quantize , respect speed, remember the random value for the current time slice
+        // etc.
+        private static int Random(double t0, double t, double speed, int length)
+            => _random.Next(0, length + 1);
+
+        private static readonly Random _random = new Random();
+    }
+
+    public enum ArpeggioDirection
+    {
+        Up,
+        Down,
+        PingPong,
+        Random
     }
 
     public class Arpeggio
     {
-        public static int[] Diminshed7th = new int[] { 0, 3, 7, 11, 14, 17, 20, 24, 20, 17, 14, 11, 7, 3, 0 };
-        public static int[] TonicTriad = new int[] { 0, 1, 3, 5, 3, 1, 0 };
-        public static int[] Nice = new int[] { 1, 12, 3, 15, 17, 5, 19, 7, 19, 5, 17, 15, 3, 12 };
+        public static int[] Diminshed7th = new int[] { 0, 3, 7, 11, 14, 17, 20, 24, 20, 17, 14, 11, 7, 3 };
+        public static int[] TonicTriad = new int[] { 0, 1, 3, 5, 3, 1 };
+        public static int[] Nice = new int[] { 0, 11, 2, 14, 16, 4, 18, 6 };
     }
 }

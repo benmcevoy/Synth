@@ -7,18 +7,20 @@ namespace Synth.Console
     {
         static void Main(string[] args)
         {
-            const int sampleRate = 44100;
+            const int sampleRate = 60000;
 
-            var voice = new ExampleVoiceWithFilter(sampleRate)
+            var voice = new ExampleVoiceWithDelayAndFilter(sampleRate)
             {
                 Volume = () => 128,
                 Attack = () => 0.2,
                 Decay = () => 0,
                 Release = () => 0.2,
                 SustainLevel = () => 240,
-                SustainDuration = () => 1,
-                FilterFrequency = (t) => Harmonic(t,1000),
-                FilterResonance = (t) => 1
+                SustainDuration = () => 4,
+                FilterFrequency = (t) => Pulsator(t, 1800, 500),
+                FilterResonance = (t) => Pulsator(t, 2, 20),
+                DelayFeedback = () => 0.5,
+                Delay = () => 0.5
             };
 
             // lol
@@ -45,16 +47,16 @@ namespace Synth.Console
                 if (key == ConsoleKey.Escape) break;
 
                 voice.Frequency = ProcessKeyPress(key);
-                voice.WaveForm = ExampleWaveFormsModifiers.Arpeggio(WaveForm.Triangle(0.5), pcm.Time, Arpeggio.Nice, 0.2);
-                voice.TriggerADSR();
+                voice.WaveForm = ExampleWaveFormsModifiers.Arpeggio(WaveForm.SineWave(1), pcm.Time, Arpeggio.Nice, 10, ArpeggioDirection.Up);
+                voice.TriggerOn();
             }
 
             device.Stop();
         }
 
-        public static double Harmonic(double t, double f) => f + (t * 120);
+        public static double Harmonic(double t, double f) => f + (t * 300);
 
-        public static double Pulsator(double t, double f) => f + Math.Sin(WaveForm.Angle(t, f));
+        public static double Pulsator(double t, double f, double r) => f + r * Math.Sin(t);
 
         private static Func<double, double> ProcessKeyPress(ConsoleKey key) =>
             key switch

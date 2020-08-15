@@ -7,6 +7,9 @@ namespace Synth
 {
     public class Voice
     {
+
+        // Tempo - in BPM for metronome, and any speed dependant things
+
         /// <summary>
         /// The overall voice volume. 
         /// </summary>
@@ -81,6 +84,9 @@ namespace Synth
         /// <returns></returns>
         public Func<double, double> TriggerADSR()
             => Envelope = EnvelopeGenerator.TriggerADSR(VoiceOutput.Time, VoiceOutput.Envelope, Attack(), Decay(), SustainLevel(), SustainDuration(), Release());
+
+        public Func<double, double> TriggerOn() => Envelope = EnvelopeGenerator.Sustain(SustainLevel());
+        public Func<double, double> TriggerOff() => Envelope = EnvelopeGenerator.Mute();
 
         /// <summary>
         /// Final output of this voice.
