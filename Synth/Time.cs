@@ -2,6 +2,8 @@
 {
     public class Time
     {
+        // TODO: add tempo calulcations for BPM
+
         public static bool HasElapsed(double t0, double t, double duration)
             => duration <= 0 || Elapsed(t0, t, duration) >= 1;
 

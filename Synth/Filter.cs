@@ -13,6 +13,9 @@ namespace Synth
         {
             CalculateCoefficients(f, q);
 
+            // TODO: this seems... wrong.  CalculateCoefficients is expecting to work with signed values
+            // probably between -1:1.  I should read the book...
+
             var n = 0.5 * v;
             var o = Convert.ToByte(Amplitude.Constrain(
                           b0 * n

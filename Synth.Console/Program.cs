@@ -7,18 +7,49 @@ namespace Synth.Console
     {
         static void Main(string[] args)
         {
-            const int sampleRate = 60000;
 
-            var voice = new ExampleVoiceWithDelayAndFilter(sampleRate)
+            // TODO: review all the todo's
+            // convert to 16 bit.  jumping between signal scales of -1:1, 0:1 and 0:255 is very confusing. 
+            // you can always decimate back to 8bit at the end if you want
+            // tempo
+            // amplitude adding
+            // parameter inputs
+            // delay, filter, etc - convert to a pipeline, add an on/off switch  OUTPUT PHASES
+            // arpeggiator! also pipelined, on/off...  INPUT PHASE
+            // LFO just waveform at low f, on/off INPUT PHASE
+            // wavetable support for line in and samples, and our waveforms
+            // waveforms/wavetable - get the c64 to spit them out as 0-255 values? won't work for pulsewidth...?
+            // metronome
+            // filter - add high pass so we can have band and notch somehow?
+
+            // *******************************************
+            // where is the line between core and external?
+            // *******************************************
+
+            // sync metronome to tempo, delay to tempo, etc, lfo to tempo
+
+            // delay, filter, arp, envelope, etc all have parameters
+
+            // Voice return raw pcm, stream does the header, and multiplexing 
+            // device is removed from core, get rid of the naudio dependancy 
+
+            // cleanup, stabilize and build the control surface
+            // sequencer
+            // midi support
+            // etc etc
+
+            const int sampleRate = 44100;
+
+            var voice =  new ExampleVoiceWithDelayAndFilter(sampleRate)
             {
                 Volume = () => 128,
                 Attack = () => 0.2,
                 Decay = () => 0,
                 Release = () => 0.2,
                 SustainLevel = () => 240,
-                SustainDuration = () => 4,
+                SustainDuration = () => 3,
                 FilterFrequency = (t) => Pulsator(t, 1800, 500),
-                FilterResonance = (t) => Pulsator(t, 2, 20),
+                FilterResonance = (t) => Pulsator(t, 5, 10),
                 DelayFeedback = () => 0.5,
                 Delay = () => 0.5
             };
@@ -30,13 +61,15 @@ namespace Synth.Console
 
             //ExampleWaveFormsModifiers.Arpeggio(WaveForm.Triangle(), pcm.Time, Arpeggio.Foo);
 
-
+            //voice.WaveForm = WaveForm.Add(WaveForm.SineWave(), WaveForm.SineWave(1.5));// ;, WaveForm.SineWave(2), WaveForm.SineWave(2.5));
 
             var pcm = new EightBitPcmStream(sampleRate, voice);
             var device = new Devices.WaveOutDevice(pcm, sampleRate, 1);
             var isPlaying = true;
 
             device.Play();
+
+            voice.TriggerOn();
 
             while (isPlaying)
             {
@@ -47,8 +80,9 @@ namespace Synth.Console
                 if (key == ConsoleKey.Escape) break;
 
                 voice.Frequency = ProcessKeyPress(key);
-                voice.WaveForm = ExampleWaveFormsModifiers.Arpeggio(WaveForm.SineWave(1), pcm.Time, Arpeggio.Nice, 10, ArpeggioDirection.Up);
-                voice.TriggerOn();
+                voice.WaveForm = ExampleWaveFormsModifiers.Arpeggio(WaveForm.SineWave(0.25), pcm.Time, Arpeggio.Nice, 10, ArpeggioDirection.Up);
+                //voice.TriggerOn();
+                
             }
 
             device.Stop();

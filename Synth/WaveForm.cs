@@ -64,19 +64,19 @@ namespace Synth
         /// Combine multiple waveforms by addition to produce a new wave form.
         /// </summary>
         public static W Add(W w1, W w2)
-            => (t, f, w) => ToByte(Constrain(w1(t, f, w) + w2(t, f, w)));
+                => (t, f, w) => Offset( Amplitude.Add(w1(t, f, w), w2(t, f, w)));
 
         /// <summary>
         /// Combine multiple waveforms by addition to produce a new wave form.
         /// </summary>
         public static W Add(W w1, W w2, W w3)
-            => (t, f, w) => ToByte(Constrain(w1(t, f, w) + w2(t, f, w) + w3(t, f, w)));
+            => (t, f, w) => Offset(Amplitude.Add(w1(t, f, w), w2(t, f, w), w3(t, f, w)));
 
         /// <summary>
         /// Combine multiple waveforms by addition to produce a new wave form.
         /// </summary>
         public static W Add(W w1, W w2, W w3, W w4)
-            => (t, f, w) => ToByte(Constrain(w1(t, f, w) + w2(t, f, w) + w3(t, f, w) + w4(t, f, w)));
+            => (t, f, w) => Offset(Amplitude.Add(w1(t, f, w), w2(t, f, w), w3(t, f, w), w4(t, f, w)));
 
         /// <summary>
         /// Map doubles in the range -1:1 to 8 bit unsigned bytes in the range 0:255.
