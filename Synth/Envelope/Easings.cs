@@ -6,14 +6,6 @@ namespace Synth.Envelope
 {
     public class Easings
     {
-        // envelope ranges from 0 to 1
-        // defintion is  Func<t0, time, duration, scale> so we are calulating a "scaling" or volume factor for a point of time
-        //. after a bit of thinking I decided to look at animation libraries for easing funcions
-
-        // linear
-        // ease (of which there are many variations)
-        // https://easings.net/ thanks you
-
         /// <summary>
         /// Linear ease. By setting start > end will ease out, e.g. decay.
         /// </summary>

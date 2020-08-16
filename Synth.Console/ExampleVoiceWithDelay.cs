@@ -19,10 +19,10 @@ namespace Synth.Console
             var inputSample = @out.Out;
             var outputSample = _buffer.Read();
 
-            _buffer.Write(Convert.ToByte(Amplitude.Constrain(inputSample + outputSample * DelayFeedback())));
+            _buffer.Write((short)(inputSample + outputSample * DelayFeedback()));
             _buffer.Delay = Delay();
 
-            return @out.With(Convert.ToByte(Amplitude.Constrain(inputSample + outputSample)));
+            return @out.With((short)(inputSample + outputSample));
         }
     }
 
@@ -53,18 +53,18 @@ namespace Synth.Console
             return @out.With(delay);
         }
 
-        private byte DelayImpl(double t, byte v)
+        private short DelayImpl(double t, short v)
         {
             var inputSample = v;
             var outputSample = _buffer.Read();
 
-            _buffer.Write(Convert.ToByte(Amplitude.Constrain(inputSample + outputSample * DelayFeedback())));
+            _buffer.Write((short)(inputSample + outputSample * DelayFeedback()));
             _buffer.Delay = Delay();
 
-            return Convert.ToByte(Amplitude.Constrain(inputSample + outputSample));
+            return (short)(inputSample + outputSample);
         }
 
-        private byte FilterImpl(double t, byte v)
+        private short FilterImpl(double t, short v)
         {
             var @out = base.Output(t);
             var output = _filter.LowPass(FilterFrequency(t), FilterResonance(t), @out.Out);

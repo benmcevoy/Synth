@@ -2,7 +2,7 @@
 {
     public class CircularBuffer
     {
-        protected readonly byte[] Buffer;
+        protected readonly short[] Buffer;
         protected readonly int Size;
         protected int WritePointer;
 
@@ -10,10 +10,10 @@
         {
             Size = size;
 
-            Buffer = new byte[size];
+            Buffer = new short[size];
         }
 
-        public virtual void Write(byte value)
+        public virtual void Write(short value)
         {
             WritePointer++;
 
@@ -22,6 +22,6 @@
             Buffer[WritePointer] = value;
         }
 
-        public virtual byte Read() => Buffer[WritePointer];
+        public virtual short Read() => Buffer[WritePointer];
     }
 }

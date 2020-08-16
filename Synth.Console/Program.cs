@@ -7,33 +7,30 @@ namespace Synth.Console
     {
         static void Main(string[] args)
         {
-
             // TODO: review all the todo's
-            // convert to 16 bit.  jumping between signal scales of -1:1, 0:1 and 0:255 is very confusing. 
+            // DONE - convert to 16 bit.  jumping between signal scales of -1:1, 0:1 and 0:255 is very confusing. 
             // you can always decimate back to 8bit at the end if you want
-            // tempo
-            // amplitude adding
-            // parameter inputs
-            // delay, filter, etc - convert to a pipeline, add an on/off switch  OUTPUT PHASES
-            // arpeggiator! also pipelined, on/off...  INPUT PHASE
-            // LFO just waveform at low f, on/off INPUT PHASE
-            // wavetable support for line in and samples, and our waveforms
-            // waveforms/wavetable - get the c64 to spit them out as 0-255 values? won't work for pulsewidth...?
+
+            // Phase issue when frequency changes - we get a click
+
+            // tempo, duration should be able to be expressed as semi or quarter times
             // metronome
-            // filter - add high pass so we can have band and notch somehow?
-
-            // *******************************************
-            // where is the line between core and external?
-            // *******************************************
-
             // sync metronome to tempo, delay to tempo, etc, lfo to tempo
 
+            // amplitude adding
+            // parameter inputs
             // delay, filter, arp, envelope, etc all have parameters
 
-            // DONE - Voice return raw pcm, stream does the header, 
-            // DONE - device is removed from core, get rid of the naudio dependancy 
+            // delay, filter, etc - convert to a pipeline, add an on/off switch  OUTPUT PHASES
+            // filter - add high pass so we can have band and notch somehow?
 
-            // NAH - and multiplexing and panning
+            // arpeggiator! also pipelined, on/off...  INPUT PHASE
+
+            // LFO just waveform at low f, on/off INPUT PHASE
+
+            // wavetable support for line in and samples, and our waveforms
+            // waveforms/wavetable - get the c64 to spit them out as 0-255 values? won't work for pulsewidth...?
+
 
             // cleanup, stabilize and build the control surface
             // sequencer
@@ -42,36 +39,12 @@ namespace Synth.Console
 
             const int sampleRate = 44100;
 
-            var voice = new Voice // new ExampleVoiceWithDelayAndFilter(sampleRate)
-            {
-                Volume = () => 128,
-                Attack = () => 0.2,
-                Decay = () => 0,
-                Release = () => 0.2,
-                SustainLevel = () => 240,
-                SustainDuration = () => 3,
-                //FilterFrequency = (t) => Pulsator(t, 1800, 500),
-                //FilterResonance = (t) => Pulsator(t, 5, 10),
-                //DelayFeedback = () => 0.5,
-                //Delay = () => 0.5
-            };
-
-            // lol
-            //var sample = System.IO.File.Open("guitar-loop.wav", System.IO.FileMode.Open);
-            //voice.WaveForm = new ExampleSamplePlayerWaveForm(sample, sampleRate, sampleRate, PitchTable.C3(0))
-            //    .Sample();
-
-            //ExampleWaveFormsModifiers.Arpeggio(WaveForm.Triangle(), pcm.Time, Arpeggio.Foo);
-
-            //voice.WaveForm = WaveForm.Add(WaveForm.SineWave(), WaveForm.SineWave(1.5));// ;, WaveForm.SineWave(2), WaveForm.SineWave(2.5));
-
+            var voice = new Voice();
             var pcm = new MonoWaveStream(sampleRate, voice);
             var device = new Devices.WaveOutDevice(pcm, sampleRate);
             var isPlaying = true;
 
-            device.Play();
-
-            voice.TriggerOn();
+            device.Play(); voice.TriggerOn();
 
             while (isPlaying)
             {
@@ -82,9 +55,7 @@ namespace Synth.Console
                 if (key == ConsoleKey.Escape) break;
 
                 voice.Frequency = ProcessKeyPress(key);
-                voice.WaveForm = ExampleWaveFormsModifiers.Arpeggio(WaveForm.SineWave(0.25), pcm.Time, Arpeggio.Nice, 10, ArpeggioDirection.Up);
-                //voice.TriggerOn();
-                
+                voice.TriggerADSR();
             }
 
             device.Stop();

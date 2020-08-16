@@ -9,24 +9,21 @@ namespace Synth
 
         public Filter(int sampleRate) => _sampleRate = sampleRate;
 
-        public byte LowPass(double f, double q, byte v)
+        public short LowPass(double f, double q, short v)
         {
             CalculateCoefficients(f, q);
 
-            // TODO: this seems... wrong.  CalculateCoefficients is expecting to work with signed values
-            // probably between -1:1.  I should read the book...
-
             var n = 0.5 * v;
-            var o = Convert.ToByte(Amplitude.Constrain(
+            var o = 
                           b0 * n
                         + b1 * n1
                         + b2 * n2
                         - a1 * o1
-                        - a2 * o2));
+                        - a2 * o2;
 
             n2 = n1; n1 = n; o2 = o1; o1 = o;
 
-            return o;
+            return (short)o;
         }
 
         // Calculate the filter coefficients based on the given parameters

@@ -2,18 +2,18 @@
 {
     public struct VoiceOutput
     {
-        public VoiceOutput(byte output, double envelope, double time)
+        public VoiceOutput(short output, double envelope, double time)
         {
             Out = output;
             Envelope = envelope;
             Time = time;
         }
 
-        public byte Out;
+        public short Out;
         public double Envelope;
         public double Time;
 
-        public VoiceOutput With(byte output) => new VoiceOutput(output, Envelope, Time);
+        public VoiceOutput With(short output) => new VoiceOutput(output, Envelope, Time);
     }
 }
 

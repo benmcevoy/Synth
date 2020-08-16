@@ -8,7 +8,7 @@ namespace Synth.Instrument.Monophonic
         private readonly WaveOutEvent _device = new WaveOutEvent();
 
         public WaveOutDevice(Stream source, int sampleRate)
-            => _device.Init(new RawSourceWaveStream(source, new WaveFormat(sampleRate, 8, 1)));
+            => _device.Init(new RawSourceWaveStream(source, new WaveFormat(sampleRate, 1)));
 
         public void Play()
         {

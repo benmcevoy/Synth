@@ -6,7 +6,7 @@
 
         public CircularDelayBuffer(int sampleRate) : base(6 * sampleRate) => _sampleRate = sampleRate;
 
-        public override byte Read() => Buffer[(WritePointer - (int)(Delay * _sampleRate) + Size) % Size];
+        public override short Read() => Buffer[(WritePointer - (int)(Delay * _sampleRate) + Size) % Size];
 
         /// <summary>
         /// Delay is a value in seconds or parts of.

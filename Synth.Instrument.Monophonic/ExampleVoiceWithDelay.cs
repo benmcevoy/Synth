@@ -19,10 +19,10 @@ namespace Synth.Instrument.Monophonic
             var inputSample = @out.Out;
             var outputSample = _buffer.Read();
 
-            _buffer.Write(Convert.ToByte(Amplitude.Constrain(inputSample + outputSample * DelayFeedback())));
+            _buffer.Write((short)(inputSample + outputSample * DelayFeedback()));
             _buffer.Delay = Delay();
 
-            return @out.With(Convert.ToByte(Amplitude.Constrain(inputSample + outputSample)));
+            return @out.With((short)(inputSample + outputSample));
         }
     }
 }

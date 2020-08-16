@@ -1,8 +1,7 @@
 ﻿using System;
 using Synth.Frequency;
-using Synth.Noise;
 using static System.Math;
-using W = System.Func<double, double, double, byte>;
+using W = System.Func<double, double, double, short>;
 
 namespace Synth.Console
 {
@@ -13,9 +12,6 @@ namespace Synth.Console
             => (t, f, w)
                 => wave(t, Sin(speed * t) + f, w);
 
-        // would be nice to have it go up/down
-        // want to get rid of the t0
-        // Arpeggiator - up/down/pingpong/random
         public static W Arpeggio(W wave, double t0, int[] scale, double speed = 0.1, ArpeggioDirection direction = ArpeggioDirection.Up)
         => (t, f, w)
             => direction switch
@@ -36,7 +32,7 @@ namespace Synth.Console
         private static int PingPong(double t0, double t, double speed, int length)
             => (int)Floor((t - t0) / speed % length);
 
-        // so naive - needs to quantize , respect speed, remember the random value for the current time slice
+        // TODO: so naive - needs to quantize , respect speed, remember the random value for the current time slice
         // etc.
         private static int Random(double t0, double t, double speed, int length)
             => _random.Next(0, length + 1);

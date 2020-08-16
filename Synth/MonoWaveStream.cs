@@ -15,7 +15,7 @@ namespace Synth
         {
             _sampleRate = sampleRate;
             _voice = voice;
-            _header = Header(sampleRate * 4, 8, sampleRate, 1);
+            _header = Header(sampleRate * 4, sizeof(short) * 8, sampleRate, 1);
         }
 
         public double Time => Position / _sampleRate;
@@ -33,8 +33,8 @@ namespace Synth
 
             while (counter < count)
             {
-                buffer[offset + counter] = _voice.Output(Time).Out;
-                counter++;
+                Append(ref buffer, _voice.Output(Time).Out, counter);
+                counter += sizeof(short);
                 Position++;
             }
 

@@ -1,5 +1,5 @@
 ﻿using System;
-using W = System.Func<double, double, double, byte>;
+using W = System.Func<double, double, double, short>;
 
 namespace Synth.Noise
 {
@@ -7,8 +7,6 @@ namespace Synth.Noise
     {
         private static readonly Random _random = new Random();
 
-        public W Next() => (t, f, w) => Convert.ToByte(_random.Next(byte.MinValue, byte.MaxValue + 1));
-
-        public static double Random() => _random.NextDouble();
+        public W Next() => (t, f, w) => (short)(short.MaxValue * _random.NextDouble());
     }
 }
