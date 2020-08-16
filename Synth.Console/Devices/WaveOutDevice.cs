@@ -1,14 +1,14 @@
 ﻿using System.IO;
 using NAudio.Wave;
 
-namespace Synth.Devices
+namespace Synth.Console.Devices
 {
     public class WaveOutDevice : IDevice
     {
         private readonly WaveOutEvent _device = new WaveOutEvent();
 
-        public WaveOutDevice(Stream source, int sampleRate, int numberOfChannels)
-            => _device.Init(new RawSourceWaveStream(source, new WaveFormat(sampleRate, 8, numberOfChannels)));
+        public WaveOutDevice(Stream source, int sampleRate)
+            => _device.Init(new RawSourceWaveStream(source, new WaveFormat(sampleRate, 8, 1)));
 
         public void Play()
         {

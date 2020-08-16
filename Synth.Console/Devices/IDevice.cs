@@ -1,4 +1,4 @@
-﻿namespace Synth.Devices
+﻿namespace Synth.Console.Devices
 {
     public interface IDevice
     {

@@ -30,8 +30,10 @@ namespace Synth.Console
 
             // delay, filter, arp, envelope, etc all have parameters
 
-            // Voice return raw pcm, stream does the header, and multiplexing 
-            // device is removed from core, get rid of the naudio dependancy 
+            // DONE - Voice return raw pcm, stream does the header, 
+            // DONE - device is removed from core, get rid of the naudio dependancy 
+
+            // NAH - and multiplexing and panning
 
             // cleanup, stabilize and build the control surface
             // sequencer
@@ -40,7 +42,7 @@ namespace Synth.Console
 
             const int sampleRate = 44100;
 
-            var voice =  new ExampleVoiceWithDelayAndFilter(sampleRate)
+            var voice = new Voice // new ExampleVoiceWithDelayAndFilter(sampleRate)
             {
                 Volume = () => 128,
                 Attack = () => 0.2,
@@ -48,10 +50,10 @@ namespace Synth.Console
                 Release = () => 0.2,
                 SustainLevel = () => 240,
                 SustainDuration = () => 3,
-                FilterFrequency = (t) => Pulsator(t, 1800, 500),
-                FilterResonance = (t) => Pulsator(t, 5, 10),
-                DelayFeedback = () => 0.5,
-                Delay = () => 0.5
+                //FilterFrequency = (t) => Pulsator(t, 1800, 500),
+                //FilterResonance = (t) => Pulsator(t, 5, 10),
+                //DelayFeedback = () => 0.5,
+                //Delay = () => 0.5
             };
 
             // lol
@@ -63,8 +65,8 @@ namespace Synth.Console
 
             //voice.WaveForm = WaveForm.Add(WaveForm.SineWave(), WaveForm.SineWave(1.5));// ;, WaveForm.SineWave(2), WaveForm.SineWave(2.5));
 
-            var pcm = new EightBitPcmStream(sampleRate, voice);
-            var device = new Devices.WaveOutDevice(pcm, sampleRate, 1);
+            var pcm = new MonoWaveStream(sampleRate, voice);
+            var device = new Devices.WaveOutDevice(pcm, sampleRate);
             var isPlaying = true;
 
             device.Play();

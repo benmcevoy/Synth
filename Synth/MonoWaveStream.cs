@@ -5,13 +5,13 @@ using System.Text;
 
 namespace Synth
 {
-    public class EightBitPcmStream : Stream
+    public class MonoWaveStream : Stream
     {
         private readonly double _sampleRate;
         private readonly Voice _voice;
         private readonly byte[] _header;
 
-        public EightBitPcmStream(int sampleRate, Voice voice)
+        public MonoWaveStream(int sampleRate, Voice voice)
         {
             _sampleRate = sampleRate;
             _voice = voice;

@@ -3,7 +3,7 @@ using System.Collections.Generic;
 using System.IO;
 using System.Text;
 
-namespace Synth.Devices
+namespace Synth.Console.Devices
 {
     public class FileOutDevice : IDevice
     {

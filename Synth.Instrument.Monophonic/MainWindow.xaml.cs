@@ -9,7 +9,7 @@ namespace Synth.Instrument.Monophonic
 {
     public partial class MainWindow : Window
     {
-        private readonly EightBitPcmStream _pcm;
+        private readonly MonoWaveStream _pcm;
         private readonly ExampleVoiceWithFilter _voice;
         private readonly DispatcherTimer _timer = new DispatcherTimer();
 
@@ -29,7 +29,7 @@ namespace Synth.Instrument.Monophonic
 
             _voice = new ExampleVoiceWithFilter(sampleRate);
 
-            _pcm = new EightBitPcmStream(sampleRate, _voice);
+            _pcm = new MonoWaveStream(sampleRate, _voice);
             _timer.Interval = TimeSpan.FromMilliseconds(10);
 
             // this "stuff" should be in some class, perhaps the State itself.
@@ -60,7 +60,7 @@ namespace Synth.Instrument.Monophonic
             _keyboard.KeyDown += MainWindow_KeyDown;
             _keyboard.KeyUp += MainWindow_KeyUp;
 
-            var device = new Devices.WaveOutDevice(_pcm, sampleRate, 1);
+            var device = new WaveOutDevice(_pcm, sampleRate);
 
             // "pull" from state
             _voice.Attack = () => _state.Attack;
