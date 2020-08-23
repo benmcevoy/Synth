@@ -3,7 +3,7 @@ using System.Windows;
 using System.Windows.Input;
 using System.Windows.Threading;
 
-using Synth.Frequency;
+using Synth.Pitch;
 
 namespace Synth.Instrument.Monophonic
 {
@@ -53,7 +53,7 @@ namespace Synth.Instrument.Monophonic
                 _state.IsLfoRingModulate = RingMod.IsChecked ?? false;
                 _state.Delay = Delay.Value;
                 _state.DelayFeedback = DelayFeedback.Value;
-                _state.FilterFrequency= FilterFrequency.Value;
+                _state.FilterFrequency = FilterFrequency.Value;
                 _state.FilterResonance = FilterResonance.Value;
             };
 
@@ -67,7 +67,7 @@ namespace Synth.Instrument.Monophonic
             _voice.Decay = () => _state.Decay;
             _voice.SustainLevel = () => _state.SustainLevel;
             _voice.Release = () => _state.Release;
-            //_voice.WaveForm = (t, f, w) => _state.WaveForm(t)(t, f, w);
+            _voice.WaveForm = (t, f, w, p) => _state.WaveForm(t)(t, f, w, p);
             _voice.PulseWidth = (t, f) => _state.Modulate(_state.IsLfoRoutedToPulseWidth, t, _state.PulseWidth);
 
             _voice.FilterFrequency = (t) => _state.FilterFrequency;
@@ -112,21 +112,21 @@ namespace Synth.Instrument.Monophonic
             _voice.TriggerRelease();
         }
 
-        private Func<Time, double> HandleKeyDown(Key key) => key switch
+        private Func<Frequency> HandleKeyDown(Key key) => key switch
         {
-            Key.A => PitchTable.C3,
-            Key.W => PitchTable.Db3,
-            Key.S => PitchTable.D3,
-            Key.E => PitchTable.Eb3,
-            Key.D => PitchTable.E3,
-            Key.F => PitchTable.F3,
-            Key.T => PitchTable.Gb3,
-            Key.G => PitchTable.G3,
-            Key.Y => PitchTable.Ab3,
-            Key.H => PitchTable.A3,
-            Key.U => PitchTable.Bb3,
-            Key.J => PitchTable.B3,
-            Key.K => PitchTable.C4,
+            Key.A => () => PitchTable.C3,
+            Key.W => () => PitchTable.Db3,
+            Key.S => () => PitchTable.D3,
+            Key.E => () => PitchTable.Eb3,
+            Key.D => () => PitchTable.E3,
+            Key.F => () => PitchTable.F3,
+            Key.T => () => PitchTable.Gb3,
+            Key.G => () => PitchTable.G3,
+            Key.Y => () => PitchTable.Ab3,
+            Key.H => () => PitchTable.A3,
+            Key.U => () => PitchTable.Bb3,
+            Key.J => () => PitchTable.B3,
+            Key.K => () => PitchTable.C4,
             _ => _voice.Frequency
         };
     }

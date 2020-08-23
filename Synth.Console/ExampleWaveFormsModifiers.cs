@@ -1,7 +1,6 @@
 ﻿using System;
-using Synth.Frequency;
 using static System.Math;
-using W = System.Func<Synth.Time, double, double, Synth.Amplitude>;
+using W = System.Func<Synth.Time, Synth.Frequency, double, Synth.Amplitude>;
 
 namespace Synth.Console
 {
@@ -16,14 +15,14 @@ namespace Synth.Console
     public static class Arpeggiator
     {
         // TODO: should not be a waveform, it's just changing frequency
-        public static W Arpeggio(W wave, double t0, int[] scale, double speed = 10, ArpeggioDirection direction = ArpeggioDirection.Up)
+        public static W Arpeggio(W wave, Time t0, int[] scale, double speed = 10, ArpeggioDirection direction = ArpeggioDirection.Up)
         => (t, f, w)
             => direction switch
             {
-                ArpeggioDirection.Up => wave(t, Pitch.FromReference(f, scale[Up(t0, t, 1 / speed, scale.Length)])(t), w),
-                ArpeggioDirection.Down => wave(t, Pitch.FromReference(f, scale[Down(t0, t, 1 / speed, scale.Length - 1)])(t), w),
-                ArpeggioDirection.PingPong => wave(t, Pitch.FromReference(f, scale[PingPong(t0, t, 1 / speed, scale.Length - 1)])(t), w),
-                ArpeggioDirection.Random => wave(t, Pitch.FromReference(f, scale[Random(t0, t, 1 / speed, scale.Length - 1)])(t), w),
+                ArpeggioDirection.Up => wave(t, Frequency.FromReference(f, scale[Up(t0, t, 1 / speed, scale.Length)]), w),
+                ArpeggioDirection.Down => wave(t, Frequency.FromReference(f, scale[Down(t0, t, 1 / speed, scale.Length - 1)]), w),
+                ArpeggioDirection.PingPong => wave(t, Frequency.FromReference(f, scale[PingPong(t0, t, 1 / speed, scale.Length - 1)]), w),
+                ArpeggioDirection.Random => wave(t, Frequency.FromReference(f, scale[Random(t0, t, 1 / speed, scale.Length - 1)]), w),
                 _ => wave(t, f, w)
             };
 

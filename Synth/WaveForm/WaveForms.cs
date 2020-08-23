@@ -1,8 +1,7 @@
 ﻿using static System.Math;
 using Synth.Noise;
 
-using W = System.Func<Synth.Time, double, double, Synth.Amplitude>;
-using W1 = System.Func<Synth.Time, double, double, Synth.WaveForm.WaveFormOut, Synth.WaveForm.WaveFormOut>;
+using W = System.Func<Synth.Time, Synth.Frequency, double, Synth.Phase, Synth.WaveForm.Phasor>;
 
 namespace Synth.WaveForm
 {
@@ -16,47 +15,38 @@ namespace Synth.WaveForm
         /// <summary>
         /// Angular frequency in radians.
         /// </summary>
-        /// <param name="t"></param>
-        /// <param name="f"></param>
-        /// <returns></returns>
         public static double Angle(double t, double f) => TwoPI * f * t;
 
-        // TODO: this must go
-        private static IWaveForm _sine = new SineWaveForm(SampleRate);
         /// <summary>
         /// A sinusoidal wave form.
         /// </summary>
-        /// <returns></returns>
-        public static W1 SineWave() => _sine.Out;
+        public static W SineWave() => (t, f, w, p) => new Phasor(Amplitude.Scale(Sin(Phase(f, p))), Phase(f, p));
 
         /// <summary>
         /// A square wave form that can be modulated by the PulseWidth function. Very similar to the pulse waveform.
         /// </summary>
-        public static W SquareWave() => (t, f, w) => Amplitude.Scale(Sign(Sin(Angle(f, t)) - Sin(PI * w * t)));
+        public static W SquareWave() => (t, f, w, p) => Amplitude.Scale(Sign(Sin(Angle(f, t)) - Sin(PI * w * t)));
 
         /// <summary>
         /// A random noise wave form generator.
         /// </summary>
-        /// <returns></returns>
         public static W Noise(INoiseGenerator noiseGenerator = null) => (noiseGenerator ?? new WhiteNoiseGenerator()).Next();
 
         /// <summary>
         /// A triangle wave form.
         /// </summary>
-        /// <returns></returns>
-        public static W Triangle() => (t, f, w) => Amplitude.Scale(Asin(Sin(Angle(f, t))) / HalfPI);
+        public static W Triangle() => (t, f, w, p) => Amplitude.Scale(Asin(Sin(Angle(f, t))) / HalfPI);
 
         /// <summary>
         /// A sawtooth wave form.
         /// </summary>
-        /// <returns></returns>
-        public static W Sawtooth() => (t, f, w) => Amplitude.Scale(f * t % 0.9F);
+        public static W Sawtooth() => (t, f, w, p) => Amplitude.Scale(f * t % 0.9F);
 
         public static W RingModulate(W w1, W w2)
-           => (t, f, w) => (short)(w1(t, f, w) * w2(t, f, w));
+           => (t, f, w, p) => new Phasor((short)(w1(t, f, w, p).Amplitude * w2(t, f, w, p).Amplitude), p);
 
         public static W Detune(W w1, W w2, double r)
-           => (t, f, w) => (short)(w1(t, (1 + r) * f, w) + w2(t, (1 - r) * f, w));
+           => (t, f, w, p) => Amplitude.Add(w1(t, (1 + r) * f, w, p), w2(t, (1 - r) * f, w, p));
 
         /// <summary>
         /// Combine multiple waveforms by addition to produce a new wave form.
@@ -67,18 +57,22 @@ namespace Synth.WaveForm
         /// Combine multiple waveforms by addition to produce a new wave form.
         /// </summary>
         public static W Add(W w1, W w2)
-                => (t, f, w) => Amplitude.Add(w1(t, f, w), w2(t, f, w));
+                => (t, f, w, p) => Amplitude.Add(w1(t, f, w, p), w2(t, f, w, p));
 
         /// <summary>
         /// Combine multiple waveforms by addition to produce a new wave form.
         /// </summary>
         public static W Add(W w1, W w2, W w3)
-            => (t, f, w) => Amplitude.Add(w1(t, f, w), w2(t, f, w), w3(t, f, w));
+            => (t, f, w, p) => Amplitude.Add(w1(t, f, w, p), w2(t, f, w, p), w3(t, f, w, p));
 
         /// <summary>
         /// Combine multiple waveforms by addition to produce a new wave form.
         /// </summary>
         public static W Add(W w1, W w2, W w3, W w4)
-            => (t, f, w) => Amplitude.Add(w1(t, f, w), w2(t, f, w), w3(t, f, w), w4(t, f, w));
+            => (t, f, w, p) => Amplitude.Add(w1(t, f, w, p), w2(t, f, w, p), w3(t, f, w, p), w4(t, f, w, p));
+
+        private static Phase Phase(Frequency f, Phase p0) => Limit(Next(f, p0));
+        private static double Next(Frequency f, double p) => p += TwoPI * f / SampleRate;
+        private static Phase Limit(double p) => p >= TwoPI ? p - TwoPI : p;
     }
 }

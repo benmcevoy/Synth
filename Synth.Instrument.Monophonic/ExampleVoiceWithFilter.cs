@@ -10,7 +10,7 @@ namespace Synth.Instrument.Monophonic
         public Func<double, double> FilterFrequency = (t) => 1000;
         public Func<double, double> FilterResonance = (t) => 0.707;
 
-        public override VoiceOutput Output(double t)
+        public override VoiceOutput Output(Time t)
         {
             var @out = base.Output(t);
 

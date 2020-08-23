@@ -5,20 +5,20 @@ namespace Synth
     public struct VoiceOutput
     {
         // TOOD: reorder these to output, time, envelope, waveform, ???, maybe dry/wet instead of out?
-        public VoiceOutput(Amplitude output, double envelope, Time time, WaveFormOut waveFormOut)
+        public VoiceOutput(Amplitude output, double envelope, Time time, Phasor p)
         {
             Out = output;
             Envelope = envelope;
             Time = time;
-            WaveFormOut = waveFormOut;
+            Phasor = p;
         }
 
         public Amplitude Out;
         public double Envelope;
         public Time Time;
-        public WaveFormOut WaveFormOut;
+        public Phasor Phasor;
 
-        public VoiceOutput With(Amplitude output) => new VoiceOutput(output, Envelope, Time, WaveFormOut);
+        public VoiceOutput With(Amplitude output) => new VoiceOutput(output, Envelope, Time, Phasor);
     }
 }
 

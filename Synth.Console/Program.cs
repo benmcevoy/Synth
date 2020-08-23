@@ -1,5 +1,5 @@
 ﻿using System;
-using Synth.Frequency;
+using Synth.Pitch;
 
 namespace Synth.Console
 {
@@ -47,12 +47,12 @@ namespace Synth.Console
                 Decay = () => 0,
                 Delay = () => 0.5,
                 DelayFeedback = () => 0.5,
-                WaveForm = WaveForm.WaveForms.SineWave(),
+                WaveForm = WaveForm.WaveForms.Triangle(),
                 IsFilterEnabled = false,
                 IsDelayEnabled = false,
                 FilterFrequency = (t) => Pulsator(t, 1200, 600),
                 FilterResonance = (t) => Pulsator(t, 12, 6),
-                PulseWidth = (t,f) => Pulsator(t, 4/12, 1/12),
+                PulseWidth = (t, f) => Pulsator(t, 4 / 12, 1 / 12),
             };
 
             var pcm = new MonoWaveStream(sampleRate, voice);
@@ -61,18 +61,25 @@ namespace Synth.Console
 
             device.Play();
 
+            var f = 440D;
+
+            
+
             while (isPlaying)
             {
+
+                voice.Frequency = () => f += 0.00001;
+
                 if (!System.Console.KeyAvailable) continue;
 
                 var key = System.Console.ReadKey().Key;
 
                 if (key == ConsoleKey.Escape) break;
 
-                
+
                 voice.Frequency = ProcessKeyPress(key);
                 //voice.WaveForm = Arpeggiator.Arpeggio(WaveForms.Triangle(), pcm.Time, Arpeggio.OnTheRun2);
-                voice.TriggerADSR();
+                voice.TriggerOn();
             }
 
             device.Stop();
@@ -82,23 +89,23 @@ namespace Synth.Console
 
         public static double Pulsator(double t, double f, double r) => f + r * Math.Sin(t * 2);
 
-        private static Func<Time, double> ProcessKeyPress(ConsoleKey key) =>
+        private static Func<Frequency> ProcessKeyPress(ConsoleKey key) =>
             key switch
             {
-                ConsoleKey.A => PitchTable.C3,
-                ConsoleKey.W => PitchTable.Db3,
-                ConsoleKey.S => PitchTable.D3,
-                ConsoleKey.E => PitchTable.Eb3,
-                ConsoleKey.D => PitchTable.E3,
-                ConsoleKey.F => PitchTable.F3,
-                ConsoleKey.T => PitchTable.Gb3,
-                ConsoleKey.G => PitchTable.G3,
-                ConsoleKey.Y => PitchTable.Ab3,
-                ConsoleKey.H => PitchTable.A3,
-                ConsoleKey.U => PitchTable.Bb3,
-                ConsoleKey.J => PitchTable.B3,
-                ConsoleKey.K => PitchTable.C4,
-                _ => PitchTable.A4
+                ConsoleKey.A => () => PitchTable.C3,
+                ConsoleKey.W => () => PitchTable.Db3,
+                ConsoleKey.S => () => PitchTable.D3,
+                ConsoleKey.E => () => PitchTable.Eb3,
+                ConsoleKey.D => () => PitchTable.E3,
+                ConsoleKey.F => () => PitchTable.F3,
+                ConsoleKey.T => () => PitchTable.Gb3,
+                ConsoleKey.G => () => PitchTable.G3,
+                ConsoleKey.Y => () => PitchTable.Ab3,
+                ConsoleKey.H => () => PitchTable.A3,
+                ConsoleKey.U => () => PitchTable.Bb3,
+                ConsoleKey.J => () => PitchTable.B3,
+                ConsoleKey.K => () => PitchTable.C4,
+                _ => () => PitchTable.A4
             };
     }
 }

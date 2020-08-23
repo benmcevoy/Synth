@@ -21,7 +21,7 @@ namespace Synth.Console
             _filter = new Filter(SampleRate);
         }
 
-        public override VoiceOutput Output(double t)
+        public override VoiceOutput Output(Time t)
         {
             var @out = base.Output(t);
             var sample = @out.Out;
@@ -32,7 +32,7 @@ namespace Synth.Console
             return @out.With(sample);
         }
 
-        private short DelayImpl(double t, Amplitude v)
+        private short DelayImpl(Time t, Amplitude v)
         {
             var inputSample = v * 0.5;
             var outputSample = _buffer.Read();
@@ -43,7 +43,7 @@ namespace Synth.Console
             return (short)(inputSample + outputSample);
         }
 
-        private short FilterImpl(double t, Amplitude v)
+        private short FilterImpl(Time t, Amplitude v)
         {
             var @out = base.Output(t);
             var output = _filter.LowPass(FilterFrequency(t), FilterResonance(t), @out.Out);

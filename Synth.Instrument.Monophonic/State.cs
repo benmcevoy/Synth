@@ -1,6 +1,7 @@
 ﻿using System;
 using System.Collections.Generic;
 using System.Windows.Input;
+using Synth.WaveForm;
 
 namespace Synth.Instrument.Monophonic
 {
@@ -22,9 +23,9 @@ namespace Synth.Instrument.Monophonic
         public double Release = 0.1;
 
         public double Delay = 0;
-        public double DelayFeedback =0;
+        public double DelayFeedback = 0;
 
-        public double FilterFrequency = 1000;
+        public Frequency FilterFrequency = 1000;
         public double FilterResonance = 0.7;
 
         public double LFO;
@@ -32,34 +33,34 @@ namespace Synth.Instrument.Monophonic
         public bool IsLfoRoutedToHarmonic;
         public bool IsLfoRingModulate;
 
-        public double Modulate(bool enabled, Time t, double f)
+        public Frequency Modulate(bool enabled, Time t, Frequency f)
             => enabled
-                ? Synth.WaveForm.WaveForms.Sawtooth()(t, f + LFO, 0)
+                ? new Frequency(f + Math.Abs(Math.Sin(2 * Math.PI * LFO * t)))
                 : f;
 
-        public Func<Time, double, double, Amplitude> WaveForm(Time t)
+        public Func<Time, Frequency, double, Phase, Phasor> WaveForm(Time t)
             => IsLfoRingModulate
-                ? Synth.WaveForm.WaveForms.Detune(
+                ? WaveForms.Detune(
                     WaveFormVolume(FromName(WF1, Harmonic1), Volume1),
                     WaveFormVolume(FromName(WF2, Modulate(IsLfoRoutedToHarmonic, t, Harmonic2)), Volume2), LFO)
-                : Synth.WaveForm.WaveForms.Add(
+                : WaveForms.Add(
                     WaveFormVolume(FromName(WF1, Harmonic1), Volume1),
                     WaveFormVolume(FromName(WF2, Modulate(IsLfoRoutedToHarmonic, t, Harmonic2)), Volume2));
 
-        private static Func<Time, double, double, Amplitude> FromName(string name, double harmonic)
+        private static Func<Time, Frequency, double, Phase, Phasor> FromName(string name, double harmonic)
             => name switch
             {
-               // "Sine" => Synth.WaveForms.SineWave(),
-                "Square" => Synth.WaveForm.WaveForms.SquareWave(),
-                "Triangle" => Synth.WaveForm.WaveForms.Triangle(),
-                "Sawtooth" => Synth.WaveForm.WaveForms.Sawtooth(),
-                "Noise" => Synth.WaveForm.WaveForms.Noise(new Noise.WhiteNoiseGenerator()),
-                _ => Synth.WaveForm.WaveForms.Triangle()
+                "Sine" => WaveForms.SineWave(),
+                "Square" => WaveForms.SquareWave(),
+                "Triangle" => WaveForms.Triangle(),
+                "Sawtooth" => WaveForms.Sawtooth(),
+                "Noise" => WaveForms.Noise(new Noise.WhiteNoiseGenerator()),
+                _ => WaveForms.SineWave()
             };
 
-        private static Func<Time, double, double, Amplitude> WaveFormVolume(Func<Time, double, double, Amplitude> wave, Amplitude volume)
-            => (t, f, w)
-            => (Amplitude)(volume * wave(t, f, w));
+        private static Func<Time, Frequency, double, Phase, Phasor> WaveFormVolume(Func<Time, Frequency, double, Phase, Phasor> wave, Amplitude volume)
+            => (t, f, w, p)
+            => (Amplitude)(volume * wave(t, f, w, p).Amplitude);
     }
 }
 

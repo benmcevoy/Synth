@@ -9,9 +9,9 @@ namespace Synth
 
         public Filter(int sampleRate) => _sampleRate = sampleRate;
 
-        public Amplitude LowPass(double f, double q, Amplitude v)
+        public Amplitude LowPass(Frequency f, double q, Amplitude v)
         {
-            CalculateCoefficients(f, q);
+            Coefficients(f, q);
 
             var n = 0.5 * v;
             var o =       b0 * n
@@ -28,7 +28,7 @@ namespace Synth
         // Calculate the filter coefficients based on the given parameters
         // Borrows code from the Bela Biquad library, itself based on code by
         // Nigel Redmon
-        private void CalculateCoefficients(double f, double q)
+        private void Coefficients(Frequency f, double q)
         {
             var k = Math.Tan(Math.PI * f / _sampleRate);
             var norm = 1D / (1D + k / q + k * k);

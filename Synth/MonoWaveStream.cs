@@ -33,7 +33,7 @@ namespace Synth
 
             while (counter < count)
             {
-                Append(ref buffer, _voice.Output(Time).Out, counter);
+                Append(ref buffer, _voice.Output(Time).Out.Value, counter);
                 counter += sizeof(short);
                 Position++;
             }

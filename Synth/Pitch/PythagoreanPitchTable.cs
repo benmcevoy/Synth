@@ -1,6 +1,6 @@
 ﻿using System;
 
-namespace Synth.Frequency
+namespace Synth.Pitch
 {
     /// <summary>
     /// Pythagorean tuning centered on A4=432Hz

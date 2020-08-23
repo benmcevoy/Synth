@@ -12,7 +12,7 @@ namespace Synth.Instrument.Monophonic
         public ExampleVoiceWithDelay(int sampleRate) : base(sampleRate)
             => _buffer = new CircularDelayBuffer(SampleRate) { Delay = Delay() };
 
-        public override VoiceOutput Output(double t)
+        public override VoiceOutput Output(Time t)
         {
             var @out = base.Output(t);
 

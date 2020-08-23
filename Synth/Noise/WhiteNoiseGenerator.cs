@@ -1,5 +1,5 @@
 ﻿using System;
-using W = System.Func<Synth.Time, double, double, Synth.Amplitude>;
+using W = System.Func<Synth.Time, Synth.Frequency, double, Synth.Phase, Synth.WaveForm.Phasor>;
 
 namespace Synth.Noise
 {
@@ -7,6 +7,6 @@ namespace Synth.Noise
     {
         private static readonly Random _random = new Random();
 
-        public W Next() => (t, f, w) => (Amplitude)(Amplitude.MaxValue * _random.NextDouble());
+        public W Next() => (t, f, w, p) => (Amplitude)(Amplitude.MaxValue * _random.NextDouble());
     }
 }

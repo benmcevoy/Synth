@@ -14,17 +14,17 @@ namespace Synth
 
         private static double Assert(double t) 
             => t < 0 
-            ? throw new ArgumentException("Value needs to be positive") 
+            ? throw new ArgumentOutOfRangeException(nameof(t), "value must be positive") 
             : t;
 
         public static implicit operator double(Time t) => t.Value;
 
         public static implicit operator Time(double t) => new Time(t);
 
-        public static bool HasElapsed(double t0, double t, double duration)
+        public static bool HasElapsed(Time t0, Time t, double duration)
             => duration <= 0 || Elapsed(t0, t, duration) >= 1;
 
-        public static double Elapsed(double t0, double t, double duration)
+        public static double Elapsed(Time t0, Time t, double duration)
             => (t - t0) / duration;
     }
 }

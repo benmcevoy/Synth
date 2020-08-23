@@ -1,4 +1,4 @@
-﻿using W = System.Func<Synth.Time, double, double, Synth.Amplitude>;
+﻿using W = System.Func<Synth.Time, Synth.Frequency, double, Synth.Phase, Synth.WaveForm.Phasor>;
 
 namespace Synth.Noise
 {

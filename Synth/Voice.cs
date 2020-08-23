@@ -1,6 +1,7 @@
 ﻿using System;
 using Synth.Envelope;
-using Synth.Frequency;
+using Synth.Pitch;
+using Synth.WaveForm;
 
 namespace Synth
 {
@@ -10,7 +11,7 @@ namespace Synth
         public Voice(int sampleRate)
         {
             SampleRate = sampleRate;
-            Synth.WaveForm.WaveForms.SampleRate = sampleRate;
+            WaveForms.SampleRate = sampleRate;
         }
 
         // Tempo - in BPM for metronome, and any speed dependant things
@@ -23,12 +24,12 @@ namespace Synth
         /// <summary>
         /// Produce a frequency value for the current time.
         /// </summary>
-        public Func<Time, double> Frequency = PitchTable.A4;
+        public Func<Frequency> Frequency = () => PitchTable.A4;
 
         /// <summary>
         /// Produce a waveform from the current time, frequency and pulsewidth.
         /// </summary>
-        public Func<Time, double, double, WaveForm.WaveFormOut, WaveForm.WaveFormOut> WaveForm = Synth.WaveForm.WaveForms.SineWave();
+        public Func<Time, Frequency, double, Phase, Phasor> WaveForm = WaveForms.SineWave();
 
         /// <summary>
         /// Produce the next envelope value for the current time and current envelope value.
@@ -38,7 +39,7 @@ namespace Synth
         /// <summary>
         /// Produce a pulsewidth value from the current time and frequency. Pulse width can be used to modulate waveforms.
         /// </summary>
-        public Func<Time, double, double> PulseWidth = (t, f) => 0;
+        public Func<Time, Frequency, double> PulseWidth = (t, f) => 0;
 
         /// <summary>
         /// The attack duration. 1.0 is equal to 1 second.
@@ -98,16 +99,15 @@ namespace Synth
         /// Final output of this voice.
         /// </summary>
         /// <returns></returns>
-        public virtual VoiceOutput Output(double t)
+        public virtual VoiceOutput Output(Time t)
             => VoiceOutput = new VoiceOutput(
-                  (short)(Volume() * Envelope(t) * WaveForm(t, Frequency(t), PulseWidth(t, Frequency(t)), VoiceOutput.WaveFormOut).Amplitude / Amplitude.MaxValue),
+                  (Amplitude)(Volume() * Envelope(t) * WaveForm(t, Frequency(), PulseWidth(t, Frequency()), VoiceOutput.Phasor).Amplitude / Amplitude.MaxValue),
                   Envelope(t),
                   t,
-                  WaveForm(t, Frequency(t), PulseWidth(t, Frequency(t)), VoiceOutput.WaveFormOut));
+                  WaveForm(t, Frequency(), PulseWidth(t, Frequency()), VoiceOutput.Phasor));
 
-        public VoiceOutput VoiceOutput = new VoiceOutput(0, 0, 0, new Synth.WaveForm.WaveFormOut());
+        public VoiceOutput VoiceOutput = new VoiceOutput();
 
         public int SampleRate { get; }
     }
 }
-
