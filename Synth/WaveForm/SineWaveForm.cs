@@ -10,7 +10,7 @@ namespace Synth.WaveForm
         {
             var phase = Phase(f, waveFormOut.Phase);
 
-            return new WaveFormOut(Scale(Sin(phase)), phase);
+            return new WaveFormOut(Amplitude.Scale(Sin(phase)), phase);
         }
     }
 }

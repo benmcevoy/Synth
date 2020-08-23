@@ -9,13 +9,10 @@ namespace Synth
         public readonly short Value;
 
         public Amplitude(short t) => Value = t;
-
         public static implicit operator short(Amplitude t) => t.Value;
-
         public static implicit operator Amplitude(short t) => new Amplitude(t);
-
+        public static Amplitude Scale(double value) => (Amplitude)(MaxValue * value);
         private static Amplitude Scale(double value, int ordinal) => (Amplitude)(MaxValue * (Math.Log(value, 2) / (8 + Math.Log(ordinal, 2))));
-
         public static Amplitude Add(Amplitude v1, Amplitude v2) => Scale(v1 + v2, 2);
         public static Amplitude Add(Amplitude v1, Amplitude v2, Amplitude v3) => Scale(v1 + v2 + v3, 3);
         public static Amplitude Add(Amplitude v1, Amplitude v2, Amplitude v3, Amplitude v4) => Scale(v1 + v2 + v3 + v4, 4);

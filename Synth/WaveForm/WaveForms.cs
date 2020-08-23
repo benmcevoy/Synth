@@ -11,9 +11,6 @@ namespace Synth.WaveForm
     {
         public const double TwoPI = 2 * PI;
         public const double HalfPI = PI / 2;
-
-        private static Amplitude Scale(double value) => (Amplitude)(Amplitude.MaxValue * value);
-
         public static int SampleRate = 44100;
 
         /// <summary>
@@ -35,7 +32,7 @@ namespace Synth.WaveForm
         /// <summary>
         /// A square wave form that can be modulated by the PulseWidth function. Very similar to the pulse waveform.
         /// </summary>
-        public static W SquareWave() => (t, f, w) => Scale(Sign(Sin(Angle(f, t)) - Sin(PI * w * t)));
+        public static W SquareWave() => (t, f, w) => Amplitude.Scale(Sign(Sin(Angle(f, t)) - Sin(PI * w * t)));
 
         /// <summary>
         /// A random noise wave form generator.
@@ -47,13 +44,13 @@ namespace Synth.WaveForm
         /// A triangle wave form.
         /// </summary>
         /// <returns></returns>
-        public static W Triangle() => (t, f, w) => Scale(Asin(Sin(Angle(f, t))) / HalfPI);
+        public static W Triangle() => (t, f, w) => Amplitude.Scale(Asin(Sin(Angle(f, t))) / HalfPI);
 
         /// <summary>
         /// A sawtooth wave form.
         /// </summary>
         /// <returns></returns>
-        public static W Sawtooth() => (t, f, w) => Scale(f * t % 0.9F);
+        public static W Sawtooth() => (t, f, w) => Amplitude.Scale(f * t % 0.9F);
 
         public static W RingModulate(W w1, W w2)
            => (t, f, w) => (short)(w1(t, f, w) * w2(t, f, w));
