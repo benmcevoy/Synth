@@ -1,7 +1,7 @@
 ﻿using System;
 using Synth.Frequency;
 using static System.Math;
-using W = System.Func<double, double, double, short>;
+using W = System.Func<Synth.Time, double, double, Synth.Amplitude>;
 
 namespace Synth.Console
 {
@@ -27,20 +27,20 @@ namespace Synth.Console
                 _ => wave(t, f, w)
             };
 
-        private static int Up(double t0, double t, double speed, int length)
+        private static int Up(Time t0, Time t, double speed, int length)
             => (int)Floor((t - t0) / speed % length);
 
         // TODO:
-        private static int Down(double t0, double t, double speed, int length)
+        private static int Down(Time t0, Time t, double speed, int length)
             => (int)Floor((t - t0) / speed % length);
 
         // TODO:
-        private static int PingPong(double t0, double t, double speed, int length)
+        private static int PingPong(Time t0, Time t, double speed, int length)
             => (int)Floor((t - t0) / speed % length);
 
         // TODO: so naive - needs to quantize , respect speed, remember the random value for the current time slice
         // etc.
-        private static int Random(double t0, double t, double speed, int length)
+        private static int Random(Time t0, Time t, double speed, int length)
             => _random.Next(0, length + 1);
 
         private static readonly Random _random = new Random();

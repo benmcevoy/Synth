@@ -13,13 +13,13 @@ namespace Synth.Envelope
                 => !HasElapsed(t0, t, duration)
                     ? Linear(e0, 1)(t0, t, duration)
                     : 1;
-        public static E Decay(double t0, double e0, double duration, short sustainLevel)
+        public static E Decay(double t0, double e0, double duration, Amplitude sustainLevel)
             => (t)
                 => !HasElapsed(t0, t, duration)
                     ? Linear(1, Normalize(sustainLevel))(t0, t, duration)
                     : Normalize(sustainLevel);
 
-        public static E Sustain(short sustainLevel)
+        public static E Sustain(Amplitude sustainLevel)
             => (t)
                 => Normalize(sustainLevel);
 
@@ -31,7 +31,7 @@ namespace Synth.Envelope
 
         public static E Mute() => (t) => 0;
 
-        public static E TriggerADSR(double t0, double e0, double attack, double decay, short sustainLevel, double sustainDuration, double release)
+        public static E TriggerADSR(double t0, double e0, double attack, double decay, Amplitude sustainLevel, double sustainDuration, double release)
             => (t)
                 => !HasElapsed(t0, t, attack) ? Attack(t0, e0, attack)(t)
                     : !HasElapsed(t0 + attack, t, decay) ? Decay(t0 + attack, e0, decay, sustainLevel)(t)
@@ -39,13 +39,13 @@ namespace Synth.Envelope
                     : !HasElapsed(t0 + attack + decay + sustainDuration, t, release) ? Release(t0 + attack + decay + sustainDuration, Normalize(sustainLevel), release)(t)
                     : Mute()(t);
 
-        public static E TriggerAttack(double t0, double e0, double attack, double decay, short sustainLevel)
+        public static E TriggerAttack(double t0, double e0, double attack, double decay, Amplitude sustainLevel)
             => (t)
                 => !HasElapsed(t0, t, attack) ? Attack(t0, e0, attack)(t)
                 : !HasElapsed(t0 + attack, t, decay) ? Decay(t0 + attack, e0, decay, sustainLevel)(t)
                 : Sustain(sustainLevel)(t);
 
-        public static E TriggerRelease(double t0, double e0, short sustainLevel, double release)
+        public static E TriggerRelease(double t0, double e0, Amplitude sustainLevel, double release)
             => (t)
                 => !HasElapsed(t0, t, release)
                     ? Release(t0, e0 > Normalize(sustainLevel) ? e0 : Normalize(sustainLevel), release)(t)

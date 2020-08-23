@@ -32,7 +32,7 @@ namespace Synth.Console
             return @out.With(sample);
         }
 
-        private short DelayImpl(double t, short v)
+        private short DelayImpl(double t, Amplitude v)
         {
             var inputSample = v * 0.5;
             var outputSample = _buffer.Read();
@@ -43,7 +43,7 @@ namespace Synth.Console
             return (short)(inputSample + outputSample);
         }
 
-        private short FilterImpl(double t, short v)
+        private short FilterImpl(double t, Amplitude v)
         {
             var @out = base.Output(t);
             var output = _filter.LowPass(FilterFrequency(t), FilterResonance(t), @out.Out);

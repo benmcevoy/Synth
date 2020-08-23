@@ -1,4 +1,4 @@
-﻿using W = System.Func<Synth.Time, double, double, short>;
+﻿using W = System.Func<Synth.Time, double, double, Synth.Amplitude>;
 
 namespace Synth.Noise
 {

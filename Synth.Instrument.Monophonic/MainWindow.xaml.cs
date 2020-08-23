@@ -38,12 +38,12 @@ namespace Synth.Instrument.Monophonic
                 // "push" into state
                 _state.Attack = A1.Value / 10d;
                 _state.Decay = D1.Value / 10d;
-                _state.SustainLevel = (short)S1.Value;
+                _state.SustainLevel = (Amplitude)S1.Value;
                 _state.Release = R1.Value / 10d;
                 _state.WF1 = WF1.Text;
-                _state.Volume1 = (short)Volume1.Value;
+                _state.Volume1 = (Amplitude)Volume1.Value;
                 _state.WF2 = WF2.Text;
-                _state.Volume2 = (short)Volume2.Value;
+                _state.Volume2 = (Amplitude)Volume2.Value;
                 _state.Harmonic1 = Harmonic1.Value / 12d + Harmonic1Fine.Value;
                 _state.Harmonic2 = Harmonic2.Value / 12d + Harmonic2Fine.Value;
                 _state.PulseWidth = PW.Value;

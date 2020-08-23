@@ -8,7 +8,7 @@ namespace Synth.WaveForm
         protected WaveForm(int sampleRate) => SampleRate = sampleRate;
         protected int SampleRate;
         protected const double TwoPI = 2 * PI;
-        protected static short Scale(double value) => (short)(short.MaxValue * value);
+        protected static Amplitude Scale(double value) => (Amplitude)(Amplitude.MaxValue * value);
 
         protected double Phase(double f, double p0)
         {

@@ -5,6 +5,9 @@ namespace Synth
     // TODO: add tempo calulcations for BPM
     public struct Time
     {
+        public const double MinValue = 0;
+        public const double MaxValue = double.MaxValue;
+
         public readonly double Value;
 
         public Time(double t) => Value = Assert(t);

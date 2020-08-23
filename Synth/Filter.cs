@@ -9,7 +9,7 @@ namespace Synth
 
         public Filter(int sampleRate) => _sampleRate = sampleRate;
 
-        public short LowPass(double f, double q, short v)
+        public Amplitude LowPass(double f, double q, Amplitude v)
         {
             CalculateCoefficients(f, q);
 

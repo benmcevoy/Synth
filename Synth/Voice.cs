@@ -18,7 +18,7 @@ namespace Synth
         /// <summary>
         /// The overall voice volume. 
         /// </summary>
-        public Func<short> Volume = () => short.MaxValue;
+        public Func<Amplitude> Volume = () => Amplitude.MaxValue;
 
         /// <summary>
         /// Produce a frequency value for the current time.
@@ -53,7 +53,7 @@ namespace Synth
         /// <summary>
         /// The sustain volume level.
         /// </summary>
-        public Func<short> SustainLevel = () => short.MaxValue;
+        public Func<Amplitude> SustainLevel = () => Amplitude.MaxValue;
 
         /// <summary>
         /// The sustain duration. 1.0 is equal to 1 second.  Sustain duration is only used when TriggerADSR is called.
@@ -100,12 +100,12 @@ namespace Synth
         /// <returns></returns>
         public virtual VoiceOutput Output(double t)
             => VoiceOutput = new VoiceOutput(
-                // TODO: need the previous (or is it current) phase value
-                  (short)(Volume() * Envelope(t) * WaveForm(t, Frequency(t), PulseWidth(t, Frequency(t)), new Synth.WaveForm.WaveFormOut()).Amplitude / short.MaxValue),
+                  (short)(Volume() * Envelope(t) * WaveForm(t, Frequency(t), PulseWidth(t, Frequency(t)), VoiceOutput.WaveFormOut).Amplitude / Amplitude.MaxValue),
                   Envelope(t),
-                  t);
+                  t,
+                  WaveForm(t, Frequency(t), PulseWidth(t, Frequency(t)), VoiceOutput.WaveFormOut));
 
-        public VoiceOutput VoiceOutput = new VoiceOutput(0, 0, 0);
+        public VoiceOutput VoiceOutput = new VoiceOutput(0, 0, 0, new Synth.WaveForm.WaveFormOut());
 
         public int SampleRate { get; }
     }

@@ -1,7 +1,7 @@
 ﻿using static System.Math;
 using Synth.Noise;
 
-using W = System.Func<Synth.Time, double, double, short>;
+using W = System.Func<Synth.Time, double, double, Synth.Amplitude>;
 using W1 = System.Func<Synth.Time, double, double, Synth.WaveForm.WaveFormOut, Synth.WaveForm.WaveFormOut>;
 
 namespace Synth.WaveForm
@@ -12,7 +12,7 @@ namespace Synth.WaveForm
         public const double TwoPI = 2 * PI;
         public const double HalfPI = PI / 2;
 
-        private static short Scale(double value) => (short)(short.MaxValue * value);
+        private static Amplitude Scale(double value) => (Amplitude)(Amplitude.MaxValue * value);
 
         public static int SampleRate = 44100;
 

@@ -2,21 +2,31 @@
 
 namespace Synth
 {
-    public class Amplitude
+    public struct Amplitude
     {
-        private static short Scale(double value, int ordinal) => (short)(short.MaxValue * (Math.Log(value, 2) / (8 + Math.Log(ordinal, 2))));
+        public const short MinValue = short.MinValue;
+        public const short MaxValue = short.MaxValue;
+        public readonly short Value;
 
-        public static short Add(double v1, double v2) => Scale(v1 + v2, 2);
-        public static short Add(double v1, double v2, double v3) => Scale(v1 + v2 + v3, 3);
-        public static short Add(double v1, double v2, double v3, double v4) => Scale(v1 + v2 + v3 + v4, 4);
-        public static short Add(double v1, double v2, double v3, double v4, double v5) => Scale(v1 + v2 + v3 + v4 + v5, 5);
-        public static short Add(double v1, double v2, double v3, double v4, double v5, double v6) => Scale(v1 + v2 + v3 + v4 + v5 + v6, 6);
-        public static short ToDecibel(double value) => (short)(20 * Math.Log10(value));
-        public static short FromDecibel(double value) => (short)Math.Pow(10, value / 20);
+        public Amplitude(short t) => Value = t;
+
+        public static implicit operator short(Amplitude t) => t.Value;
+
+        public static implicit operator Amplitude(short t) => new Amplitude(t);
+
+        private static Amplitude Scale(double value, int ordinal) => (Amplitude)(MaxValue * (Math.Log(value, 2) / (8 + Math.Log(ordinal, 2))));
+
+        public static Amplitude Add(Amplitude v1, Amplitude v2) => Scale(v1 + v2, 2);
+        public static Amplitude Add(Amplitude v1, Amplitude v2, Amplitude v3) => Scale(v1 + v2 + v3, 3);
+        public static Amplitude Add(Amplitude v1, Amplitude v2, Amplitude v3, Amplitude v4) => Scale(v1 + v2 + v3 + v4, 4);
+        public static Amplitude Add(Amplitude v1, Amplitude v2, Amplitude v3, Amplitude v4, Amplitude v5) => Scale(v1 + v2 + v3 + v4 + v5, 5);
+        public static Amplitude Add(Amplitude v1, Amplitude v2, Amplitude v3, Amplitude v4, Amplitude v5, Amplitude v6) => Scale(v1 + v2 + v3 + v4 + v5 + v6, 6);
+        public static Amplitude ToDecibel(double value) => (Amplitude)(20 * Math.Log10(value));
+        public static Amplitude FromDecibel(double value) => (Amplitude)Math.Pow(10, value / 20);
 
         /// <summary>
         /// Normalize a short to the range -1:1
         /// </summary>
-        public static double Normalize(short value) => value / short.MaxValue;
+        public static double Normalize(Amplitude value) => value / MaxValue;
     }
 }

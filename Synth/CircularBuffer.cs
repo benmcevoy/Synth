@@ -2,7 +2,7 @@
 {
     public class CircularBuffer
     {
-        protected readonly short[] Buffer;
+        protected readonly Amplitude[] Buffer;
         protected readonly int Size;
         protected int WritePointer;
 
@@ -10,10 +10,10 @@
         {
             Size = size;
 
-            Buffer = new short[size];
+            Buffer = new Amplitude[size];
         }
 
-        public virtual void Write(short value)
+        public virtual void Write(Amplitude value)
         {
             WritePointer++;
 
@@ -22,6 +22,6 @@
             Buffer[WritePointer] = value;
         }
 
-        public virtual short Read() => Buffer[WritePointer];
+        public virtual Amplitude Read() => Buffer[WritePointer];
     }
 }
