@@ -6,6 +6,13 @@ namespace Synth
 {
     public class Voice
     {
+        // TODO: what a mess
+        public Voice(int sampleRate)
+        {
+            SampleRate = sampleRate;
+            Synth.WaveForm.WaveForms.SampleRate = sampleRate;
+        }
+
         // Tempo - in BPM for metronome, and any speed dependant things
 
         /// <summary>
@@ -16,22 +23,22 @@ namespace Synth
         /// <summary>
         /// Produce a frequency value for the current time.
         /// </summary>
-        public Func<double, double> Frequency = PitchTable.A4;
+        public Func<Time, double> Frequency = PitchTable.A4;
 
         /// <summary>
         /// Produce a waveform from the current time, frequency and pulsewidth.
         /// </summary>
-        public Func<double, double, double, short> WaveForm = Synth.WaveForm.SineWave();
+        public Func<Time, double, double, WaveForm.WaveFormOut, WaveForm.WaveFormOut> WaveForm = Synth.WaveForm.WaveForms.SineWave();
 
         /// <summary>
         /// Produce the next envelope value for the current time and current envelope value.
         /// </summary>
-        public Func<double, double> Envelope = EnvelopeGenerator.Mute();
+        public Func<Time, double> Envelope = EnvelopeGenerator.Mute();
 
         /// <summary>
         /// Produce a pulsewidth value from the current time and frequency. Pulse width can be used to modulate waveforms.
         /// </summary>
-        public Func<double, double, double> PulseWidth = (t, f) => 0;
+        public Func<Time, double, double> PulseWidth = (t, f) => 0;
 
         /// <summary>
         /// The attack duration. 1.0 is equal to 1 second.
@@ -64,7 +71,7 @@ namespace Synth
         /// </summary>
         /// <param name="t0">Start time</param>
         /// <returns></returns>
-        public Func<double, double> TriggerAttack()
+        public Func<Time, double> TriggerAttack()
             => Envelope = EnvelopeGenerator.TriggerAttack(VoiceOutput.Time, VoiceOutput.Envelope, Attack(), Decay(), SustainLevel());
 
         /// <summary>
@@ -72,7 +79,7 @@ namespace Synth
         /// </summary>
         /// <param name="t0">Start time</param>
         /// <returns></returns>
-        public Func<double, double> TriggerRelease()
+        public Func<Time, double> TriggerRelease()
             => Envelope = EnvelopeGenerator.TriggerRelease(VoiceOutput.Time, VoiceOutput.Envelope, SustainLevel(), Release());
 
         /// <summary>
@@ -80,12 +87,12 @@ namespace Synth
         /// </summary>
         /// <param name="t0">Start time</param>
         /// <returns></returns>
-        public Func<double, double> TriggerADSR()
+        public Func<Time, double> TriggerADSR()
             => Envelope = EnvelopeGenerator.TriggerADSR(VoiceOutput.Time, VoiceOutput.Envelope, Attack(), Decay(), SustainLevel(), SustainDuration(), Release());
 
-        public Func<double, double> TriggerOn() => Envelope = EnvelopeGenerator.Sustain(SustainLevel());
+        public Func<Time, double> TriggerOn() => Envelope = EnvelopeGenerator.Sustain(SustainLevel());
 
-        public Func<double, double> TriggerOff() => Envelope = EnvelopeGenerator.Mute();
+        public Func<Time, double> TriggerOff() => Envelope = EnvelopeGenerator.Mute();
 
         /// <summary>
         /// Final output of this voice.
@@ -93,11 +100,14 @@ namespace Synth
         /// <returns></returns>
         public virtual VoiceOutput Output(double t)
             => VoiceOutput = new VoiceOutput(
-                  (short)(Volume() * Envelope(t) * WaveForm(t, Frequency(t), PulseWidth(t, Frequency(t))) / short.MaxValue),
+                // TODO: need the previous (or is it current) phase value
+                  (short)(Volume() * Envelope(t) * WaveForm(t, Frequency(t), PulseWidth(t, Frequency(t)), new Synth.WaveForm.WaveFormOut()).Amplitude / short.MaxValue),
                   Envelope(t),
                   t);
 
         public VoiceOutput VoiceOutput = new VoiceOutput(0, 0, 0);
+
+        public int SampleRate { get; }
     }
 }
 

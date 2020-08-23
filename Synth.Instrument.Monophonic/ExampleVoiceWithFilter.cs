@@ -6,7 +6,7 @@ namespace Synth.Instrument.Monophonic
     {
         private readonly Filter _filter;
 
-        public ExampleVoiceWithFilter(int sampleRate) => _filter = new Filter(sampleRate);
+        public ExampleVoiceWithFilter(int sampleRate) : base(sampleRate) => _filter = new Filter(sampleRate);
         public Func<double, double> FilterFrequency = (t) => 1000;
         public Func<double, double> FilterResonance = (t) => 0.707;
 

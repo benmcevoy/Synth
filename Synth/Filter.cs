@@ -14,8 +14,7 @@ namespace Synth
             CalculateCoefficients(f, q);
 
             var n = 0.5 * v;
-            var o = 
-                          b0 * n
+            var o =       b0 * n
                         + b1 * n1
                         + b2 * n2
                         - a1 * o1

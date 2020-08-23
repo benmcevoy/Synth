@@ -9,8 +9,8 @@ namespace Synth.Instrument.Monophonic
         public Func<double> Delay = () => 0.5;
         public Func<double> DelayFeedback = () => 0.5;
 
-        public ExampleVoiceWithDelay(int sampleRate)
-            => _buffer = new CircularDelayBuffer(sampleRate) { Delay = Delay() };
+        public ExampleVoiceWithDelay(int sampleRate) : base(sampleRate)
+            => _buffer = new CircularDelayBuffer(SampleRate) { Delay = Delay() };
 
         public override VoiceOutput Output(double t)
         {

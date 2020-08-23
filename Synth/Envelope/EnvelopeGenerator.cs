@@ -2,7 +2,7 @@
 using static Synth.Envelope.Easings;
 using static Synth.Amplitude;
 
-using E = System.Func<double, double>;
+using E = System.Func<Synth.Time, double>;
 
 namespace Synth.Envelope
 {

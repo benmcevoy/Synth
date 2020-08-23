@@ -39,12 +39,27 @@ namespace Synth.Console
 
             const int sampleRate = 44100;
 
-            var voice = new Voice();
+            var voice = new ExampleVoiceWithDelayAndFilter(sampleRate)
+            {
+                SustainDuration = () => 0.2,
+                Release = () => 0.01,
+                Attack = () => 0,
+                Decay = () => 0,
+                Delay = () => 0.5,
+                DelayFeedback = () => 0.5,
+                WaveForm = WaveForm.WaveForms.SineWave(),
+                IsFilterEnabled = false,
+                IsDelayEnabled = false,
+                FilterFrequency = (t) => Pulsator(t, 1200, 600),
+                FilterResonance = (t) => Pulsator(t, 12, 6),
+                PulseWidth = (t,f) => Pulsator(t, 4/12, 1/12),
+            };
+
             var pcm = new MonoWaveStream(sampleRate, voice);
             var device = new Devices.WaveOutDevice(pcm, sampleRate);
             var isPlaying = true;
 
-            device.Play(); voice.TriggerOn();
+            device.Play();
 
             while (isPlaying)
             {
@@ -54,7 +69,9 @@ namespace Synth.Console
 
                 if (key == ConsoleKey.Escape) break;
 
+                
                 voice.Frequency = ProcessKeyPress(key);
+                //voice.WaveForm = Arpeggiator.Arpeggio(WaveForms.Triangle(), pcm.Time, Arpeggio.OnTheRun2);
                 voice.TriggerADSR();
             }
 
@@ -63,9 +80,9 @@ namespace Synth.Console
 
         public static double Harmonic(double t, double f) => f + (t * 300);
 
-        public static double Pulsator(double t, double f, double r) => f + r * Math.Sin(t);
+        public static double Pulsator(double t, double f, double r) => f + r * Math.Sin(t * 2);
 
-        private static Func<double, double> ProcessKeyPress(ConsoleKey key) =>
+        private static Func<Time, double> ProcessKeyPress(ConsoleKey key) =>
             key switch
             {
                 ConsoleKey.A => PitchTable.C3,

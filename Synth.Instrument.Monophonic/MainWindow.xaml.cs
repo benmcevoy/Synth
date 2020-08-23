@@ -67,7 +67,7 @@ namespace Synth.Instrument.Monophonic
             _voice.Decay = () => _state.Decay;
             _voice.SustainLevel = () => _state.SustainLevel;
             _voice.Release = () => _state.Release;
-            _voice.WaveForm = (t, f, w) => _state.WaveForm(t)(t, f, w);
+            //_voice.WaveForm = (t, f, w) => _state.WaveForm(t)(t, f, w);
             _voice.PulseWidth = (t, f) => _state.Modulate(_state.IsLfoRoutedToPulseWidth, t, _state.PulseWidth);
 
             _voice.FilterFrequency = (t) => _state.FilterFrequency;
@@ -112,7 +112,7 @@ namespace Synth.Instrument.Monophonic
             _voice.TriggerRelease();
         }
 
-        private Func<double, double> HandleKeyDown(Key key) => key switch
+        private Func<Time, double> HandleKeyDown(Key key) => key switch
         {
             Key.A => PitchTable.C3,
             Key.W => PitchTable.Db3,

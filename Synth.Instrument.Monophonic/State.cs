@@ -34,30 +34,30 @@ namespace Synth.Instrument.Monophonic
 
         public double Modulate(bool enabled, double t, double f)
             => enabled
-                ? Synth.WaveForm.SineWave()(t, f + LFO, 0)
+                ? Synth.WaveForm.WaveForms.Sawtooth()(t, f + LFO, 0)
                 : f;
 
-        public Func<double, double, double, short> WaveForm(double t)
+        public Func<Time, double, double, short> WaveForm(double t)
             => IsLfoRingModulate
-                ? Synth.WaveForm.Detune(
+                ? Synth.WaveForm.WaveForms.Detune(
                     WaveFormVolume(FromName(WF1, Harmonic1), Volume1),
                     WaveFormVolume(FromName(WF2, Modulate(IsLfoRoutedToHarmonic, t, Harmonic2)), Volume2), LFO)
-                : Synth.WaveForm.Add(
+                : Synth.WaveForm.WaveForms.Add(
                     WaveFormVolume(FromName(WF1, Harmonic1), Volume1),
                     WaveFormVolume(FromName(WF2, Modulate(IsLfoRoutedToHarmonic, t, Harmonic2)), Volume2));
 
-        private static Func<double, double, double, short> FromName(string name, double harmonic)
+        private static Func<Time, double, double, short> FromName(string name, double harmonic)
             => name switch
             {
-                "Sine" => Synth.WaveForm.SineWave(harmonic),
-                "Square" => Synth.WaveForm.SquareWave(harmonic),
-                "Triangle" => Synth.WaveForm.Triangle(harmonic),
-                "Sawtooth" => Synth.WaveForm.Sawtooth(harmonic),
-                "Noise" => Synth.WaveForm.Noise(new Noise.WhiteNoiseGenerator()),
-                _ => Synth.WaveForm.SineWave(harmonic)
+               // "Sine" => Synth.WaveForms.SineWave(),
+                "Square" => Synth.WaveForm.WaveForms.SquareWave(),
+                "Triangle" => Synth.WaveForm.WaveForms.Triangle(),
+                "Sawtooth" => Synth.WaveForm.WaveForms.Sawtooth(),
+                "Noise" => Synth.WaveForm.WaveForms.Noise(new Noise.WhiteNoiseGenerator()),
+                _ => Synth.WaveForm.WaveForms.Triangle()
             };
 
-        private static Func<double, double, double, short> WaveFormVolume(Func<double, double, double, short> wave, short volume)
+        private static Func<Time, double, double, short> WaveFormVolume(Func<Time, double, double, short> wave, short volume)
             => (t, f, w)
             => (short)(volume * wave(t, f, w));
     }
