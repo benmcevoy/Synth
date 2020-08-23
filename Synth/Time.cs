@@ -2,28 +2,21 @@
 
 namespace Synth
 {
+    // TODO: add tempo calulcations for BPM
     public struct Time
     {
-        private readonly double _value;
+        public readonly double Value;
 
-        public Time(double t)
-        {
-            if (t < 0) throw new ArgumentException("Value needs to be positive");
+        public Time(double t) => Value = Assert(t);
 
-            _value = t;
-        }
+        private static double Assert(double t) 
+            => t < 0 
+            ? throw new ArgumentException("Value needs to be positive") 
+            : t;
 
-        public static implicit operator double(Time t) => t._value;
+        public static implicit operator double(Time t) => t.Value;
 
-        public static implicit operator Time(double t)
-        {
-
-            if (t < 0)
-                throw new ArgumentOutOfRangeException("Only positive values allowed");
-            return new Time(t);
-        }
-
-        // TODO: add tempo calulcations for BPM
+        public static implicit operator Time(double t) => new Time(t);
 
         public static bool HasElapsed(double t0, double t, double duration)
             => duration <= 0 || Elapsed(t0, t, duration) >= 1;

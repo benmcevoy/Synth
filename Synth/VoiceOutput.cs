@@ -2,7 +2,7 @@
 {
     public struct VoiceOutput
     {
-        public VoiceOutput(short output, double envelope, double time)
+        public VoiceOutput(short output, double envelope, Time time)
         {
             Out = output;
             Envelope = envelope;
@@ -11,7 +11,7 @@
 
         public short Out;
         public double Envelope;
-        public double Time;
+        public Time Time;
 
         public VoiceOutput With(short output) => new VoiceOutput(output, Envelope, Time);
     }
