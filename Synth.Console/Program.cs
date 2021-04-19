@@ -16,6 +16,7 @@ namespace Synth.Console
             // tempo, duration should be able to be expressed as semi or quarter times
             // metronome
             // sync metronome to tempo, delay to tempo, etc, lfo to tempo
+            // when you have a clock that can tick you then have a step sequencer
 
             // amplitude adding
             // parameter inputs
@@ -47,10 +48,10 @@ namespace Synth.Console
                 Decay = () => 0,
                 Delay = () => 0.5,
                 DelayFeedback = () => 0.5,
-                WaveForm = WaveForm.WaveForms.Triangle(),
-                IsFilterEnabled = false,
-                IsDelayEnabled = false,
-                FilterFrequency = (t) => Pulsator(t, 1200, 600),
+                //WaveForm = WaveForm.WaveForms.Triangle(),
+                IsFilterEnabled = true,
+                IsDelayEnabled = true,
+                FilterFrequency = (t) => Pulsator(t, 1000, 500),
                 FilterResonance = (t) => Pulsator(t, 12, 6),
                 PulseWidth = (t, f) => Pulsator(t, 4 / 12, 1 / 12),
             };
@@ -61,15 +62,10 @@ namespace Synth.Console
 
             device.Play();
 
-            var f = 440D;
-
-            
+            voice.TriggerOn();
 
             while (isPlaying)
             {
-
-                voice.Frequency = () => f += 0.00001;
-
                 if (!System.Console.KeyAvailable) continue;
 
                 var key = System.Console.ReadKey().Key;
@@ -78,8 +74,8 @@ namespace Synth.Console
 
 
                 voice.Frequency = ProcessKeyPress(key);
-                //voice.WaveForm = Arpeggiator.Arpeggio(WaveForms.Triangle(), pcm.Time, Arpeggio.OnTheRun2);
-                voice.TriggerOn();
+                 voice.WaveForm = Arpeggiator.Arpeggio(Synth.WaveForm.WaveForms.Triangle(), pcm.Time, Arpeggio.Nice);
+                
             }
 
             device.Stop();
@@ -92,19 +88,19 @@ namespace Synth.Console
         private static Func<Frequency> ProcessKeyPress(ConsoleKey key) =>
             key switch
             {
-                ConsoleKey.A => () => PitchTable.C3,
-                ConsoleKey.W => () => PitchTable.Db3,
-                ConsoleKey.S => () => PitchTable.D3,
-                ConsoleKey.E => () => PitchTable.Eb3,
-                ConsoleKey.D => () => PitchTable.E3,
-                ConsoleKey.F => () => PitchTable.F3,
-                ConsoleKey.T => () => PitchTable.Gb3,
-                ConsoleKey.G => () => PitchTable.G3,
-                ConsoleKey.Y => () => PitchTable.Ab3,
-                ConsoleKey.H => () => PitchTable.A3,
-                ConsoleKey.U => () => PitchTable.Bb3,
-                ConsoleKey.J => () => PitchTable.B3,
-                ConsoleKey.K => () => PitchTable.C4,
+                ConsoleKey.A => () => PitchTable.C2,
+                ConsoleKey.W => () => PitchTable.Db2,
+                ConsoleKey.S => () => PitchTable.D2,
+                ConsoleKey.E => () => PitchTable.Eb2,
+                ConsoleKey.D => () => PitchTable.E2,
+                ConsoleKey.F => () => PitchTable.F2,
+                ConsoleKey.T => () => PitchTable.Gb2,
+                ConsoleKey.G => () => PitchTable.G2,
+                ConsoleKey.Y => () => PitchTable.Ab2,
+                ConsoleKey.H => () => PitchTable.A2,
+                ConsoleKey.U => () => PitchTable.Bb2,
+                ConsoleKey.J => () => PitchTable.B2,
+                ConsoleKey.K => () => PitchTable.C3,
                 _ => () => PitchTable.A4
             };
     }

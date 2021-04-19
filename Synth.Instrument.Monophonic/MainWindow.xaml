@@ -58,7 +58,7 @@
 
         <StackPanel Grid.Row="0" Grid.Column="2">
             <Label>LFO</Label>
-            <Slider Name="LFO" Minimum="0" Maximum="10" SmallChange="0.001"  Value="0.01" AutoToolTipPlacement="TopLeft" AutoToolTipPrecision="5"/>
+            <Slider Name="LFO" Minimum="0" Maximum="1" SmallChange="0.001"  Value="0.05" AutoToolTipPlacement="TopLeft" AutoToolTipPrecision="5"/>
             <CheckBox Name="ModPW" >Modulate Pulsewidth</CheckBox>
             <CheckBox Name="ModHarmonic">Modulate harmonic wf2</CheckBox>
             <CheckBox Name="RingMod">Ring modulate wf2> wf1</CheckBox>

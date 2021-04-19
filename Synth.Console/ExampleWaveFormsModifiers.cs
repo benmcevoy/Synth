@@ -1,6 +1,6 @@
 ﻿using System;
 using static System.Math;
-using W = System.Func<Synth.Time, Synth.Frequency, double, Synth.Amplitude>;
+using W = System.Func<Synth.Time, Synth.Frequency, double, Synth.Phase, Synth.WaveForm.Phasor>;
 
 namespace Synth.Console
 {
@@ -8,22 +8,22 @@ namespace Synth.Console
     {
         // slide up and down
         public static W Vibrato(W wave, int speed = 120)
-            => (t, f, w)
-                => wave(t, Sin(speed * t) + f, w);
+            => (t, f, w, p)
+                => wave(t, Sin(speed * t) + f, w, p);
     }
 
     public static class Arpeggiator
     {
         // TODO: should not be a waveform, it's just changing frequency
         public static W Arpeggio(W wave, Time t0, int[] scale, double speed = 10, ArpeggioDirection direction = ArpeggioDirection.Up)
-        => (t, f, w)
+        => (t, f, w, p)
             => direction switch
             {
-                ArpeggioDirection.Up => wave(t, Frequency.FromReference(f, scale[Up(t0, t, 1 / speed, scale.Length)]), w),
-                ArpeggioDirection.Down => wave(t, Frequency.FromReference(f, scale[Down(t0, t, 1 / speed, scale.Length - 1)]), w),
-                ArpeggioDirection.PingPong => wave(t, Frequency.FromReference(f, scale[PingPong(t0, t, 1 / speed, scale.Length - 1)]), w),
-                ArpeggioDirection.Random => wave(t, Frequency.FromReference(f, scale[Random(t0, t, 1 / speed, scale.Length - 1)]), w),
-                _ => wave(t, f, w)
+                ArpeggioDirection.Up => wave(t, Frequency.FromReference(f, scale[Up(t0, t, 1 / speed, scale.Length)]), w, p),
+                ArpeggioDirection.Down => wave(t, Frequency.FromReference(f, scale[Down(t0, t, 1 / speed, scale.Length - 1)]), w, p),
+                ArpeggioDirection.PingPong => wave(t, Frequency.FromReference(f, scale[PingPong(t0, t, 1 / speed, scale.Length - 1)]), w, p),
+                ArpeggioDirection.Random => wave(t, Frequency.FromReference(f, scale[Random(t0, t, 1 / speed, scale.Length - 1)]), w, p),
+                _ => wave(t, f, w, p)
             };
 
         private static int Up(Time t0, Time t, double speed, int length)
