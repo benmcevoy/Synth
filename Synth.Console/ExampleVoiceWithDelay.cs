@@ -1,6 +1,6 @@
 ﻿using System;
 
-namespace Synth.Instrument.Monophonic
+namespace Synth.Console
 {
     class ExampleVoiceWithDelay : Voice
     {
