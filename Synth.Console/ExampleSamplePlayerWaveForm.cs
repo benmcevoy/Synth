@@ -1,5 +1,6 @@
 ﻿using System.IO;
-using W = System.Func<double, double, double, short>;
+using Synth.WaveForm;
+using W = System.Func<Synth.Time, Synth.Frequency, double, Synth.Phase, Synth.WaveForm.Phasor>;
 
 namespace Synth.Console
 {
@@ -11,7 +12,8 @@ namespace Synth.Console
         private readonly byte[] _buffer = new byte[2];
         private double _position;
 
-        public ExampleSamplePlayerWaveForm(Stream pcmStream, double voiceSampleRate, double pcmStreamSampleRate, double scaleToFrequency = 440)
+        public ExampleSamplePlayerWaveForm(Stream pcmStream, double voiceSampleRate, double pcmStreamSampleRate,
+            double scaleToFrequency = 440)
         {
             _stream = pcmStream;
             _sampleRate = pcmStreamSampleRate / voiceSampleRate;
@@ -20,7 +22,7 @@ namespace Synth.Console
         }
 
         public W Sample(double harmonic = 1)
-        => (t, f, w) =>
+            => (t, f, w, p) =>
             {
                 // read two bytes to make a short
                 _stream.Read(_buffer, 0, 2);
@@ -29,8 +31,8 @@ namespace Synth.Console
 
                 if (_stream.Position > _stream.Length) _position = 44;
 
-                return (short)(_buffer[1] | (_buffer[0] << 8));
+                // second byte [1] is shifted to be the high byte - little endian 
+                return new Phasor((short)(_buffer[0] | _buffer[1] << 8), 0d);
             };
     }
 }
-

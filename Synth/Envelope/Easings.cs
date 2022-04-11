@@ -18,7 +18,7 @@ namespace Synth.Envelope
                     : start + Elapsed(t0, t, d) * (end - start);
 
         /// <summary>
-        /// Sinisoidal ease in or out. By setting start > end will ease out, e.g. decay.
+        /// Sinusoidal ease in OR out. By setting start > end will ease out, e.g. decay.
         /// </summary>
         /// <param name="start">value between 0:1</param>
         /// <param name="end">value between 0:1</param>
@@ -29,7 +29,7 @@ namespace Synth.Envelope
                     : start + (1 - Cos(Elapsed(t0, t, d) * PI / 2)) * (end - start);
 
         /// <summary>
-        /// Sinisoidal ease in and out. By setting start > end will ease out, e.g. decay.
+        /// Sinusoidal ease in AND out. By setting start > end will ease out, e.g. decay.
         /// </summary>
         /// <param name="start">value between 0:1</param>
         /// <param name="end">value between 0:1</param>

@@ -1,4 +1,5 @@
 ﻿using System;
+using System.IO;
 using Synth.Pitch;
 
 namespace Synth.Console
@@ -40,6 +41,12 @@ namespace Synth.Console
 
             const int sampleRate = 44100;
 
+            // sample wave is expected to be 16bit unsigned, mono 44.1kHz
+            var sampleWave = new ExampleSamplePlayerWaveForm(
+                File.OpenRead("sample.wav"),
+                sampleRate,
+                sampleRate);
+
             var voice = new Voice(sampleRate)
             {
                 //SustainDuration = () => 0.2,
@@ -47,13 +54,10 @@ namespace Synth.Console
                 //Attack = () => 0,
                 //Decay = () => 0,
 
-                // WaveForm = WaveForm.WaveForms.Add(
-                //             WaveForm.WaveForms.Detune(WaveForm.WaveForms.SineWave(), WaveForm.WaveForms.SineWave(), 0.5),
-                //             WaveForm.WaveForms.Detune(WaveForm.WaveForms.SineWave(), WaveForm.WaveForms.SineWave(), 0.6)),
 
-                WaveForm =  WaveForm.WaveForms.SineWave(),
+                WaveForm = sampleWave.Sample(),
                 Frequency = () => 440,
-                Volume = () => Amplitude.MaxValue,
+                Volume = () => Amplitude.MaxValue / 2,
                 //Delay = () => 0.5,
                 //DelayFeedback = () => 0.5,
 
@@ -65,14 +69,13 @@ namespace Synth.Console
             };
 
             var pcm = new MonoWaveStream(sampleRate, voice);
-            var device = new Devices.SdlAudioDevice (pcm, sampleRate);
-            var isPlaying = true;
+            var device = new Devices.SdlAudioDevice(pcm, sampleRate);
 
             device.Play();
 
             voice.TriggerOn();
 
-            while (isPlaying)
+            while (true)
             {
                 if (!System.Console.KeyAvailable) continue;
 
@@ -80,10 +83,8 @@ namespace Synth.Console
 
                 if (key == ConsoleKey.Escape) break;
 
-
                 voice.Frequency = ProcessKeyPress(key);
-                //voice.WaveForm = Arpeggiator.Arpeggio(WaveForm.WaveForms.SineWave(), pcm.Time, Arpeggio.Nice);
-
+                //voice.WaveForm = ExampleWaveFormsModifiers.Vibrato(WaveForm.WaveForms.Sawtooth());
             }
 
             device.Stop();
@@ -109,6 +110,7 @@ namespace Synth.Console
                 ConsoleKey.U => () => PitchTable.Bb2,
                 ConsoleKey.J => () => PitchTable.B2,
                 ConsoleKey.K => () => PitchTable.C3,
+                ConsoleKey.M => () => PitchTable.A5,
                 _ => () => PitchTable.A4
             };
     }

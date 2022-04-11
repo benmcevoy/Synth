@@ -5,7 +5,7 @@ using W = System.Func<Synth.Time, Synth.Frequency, double, Synth.Phase, Synth.Wa
 
 namespace Synth.WaveForm
 {
-    // TODO: this class is probaly a real thing and should not be static
+    // TODO: this class is probably a real thing and should not be static
     public static class WaveForms
     {
         public const double TwoPI = 2 * PI;
