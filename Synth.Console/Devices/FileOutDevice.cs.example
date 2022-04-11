@@ -5,6 +5,7 @@ using System.Text;
 
 namespace Synth.Console.Devices
 {
+    // this just saves the content of the stream, not very useful
     public class FileOutDevice : IDevice
     {
         private readonly Stream _source;

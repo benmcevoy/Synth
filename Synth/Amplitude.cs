@@ -13,6 +13,8 @@ namespace Synth
         public static implicit operator Amplitude(short a) => new Amplitude(a);
         public static Amplitude Scale(double value) => (Amplitude)(MaxValue * value);
         private static Amplitude Scale(double value, int ordinal) => (Amplitude)(MaxValue * (Math.Log(value, 2) / (8 + Math.Log(ordinal, 2))));
+
+        // TODO: replace with + overload instead
         public static Amplitude Add(Amplitude v1, Amplitude v2) => Scale(v1 + v2, 2);
         public static Amplitude Add(Amplitude v1, Amplitude v2, Amplitude v3) => Scale(v1 + v2 + v3, 3);
         public static Amplitude Add(Amplitude v1, Amplitude v2, Amplitude v3, Amplitude v4) => Scale(v1 + v2 + v3 + v4, 4);
@@ -20,6 +22,10 @@ namespace Synth
         public static Amplitude Add(Amplitude v1, Amplitude v2, Amplitude v3, Amplitude v4, Amplitude v5, Amplitude v6) => Scale(v1 + v2 + v3 + v4 + v5 + v6, 6);
         public static Amplitude ToDecibel(double value) => (Amplitude)(20 * Math.Log10(value));
         public static Amplitude FromDecibel(double value) => (Amplitude)Math.Pow(10, value / 20);
+
+        public static Amplitude operator *(Amplitude a, Amplitude b)
+            => new Amplitude((short)(a.Value * b.Value));
+
 
         /// <summary>
         /// Normalize a short to the range -1:1

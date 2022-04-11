@@ -1,0 +1,51 @@
+using System.Diagnostics;
+using System.IO;
+using System.Timers;
+
+namespace Synth.Console.Devices
+{
+    // using a timer to simulate a "Push" model
+    // not very good
+    public class StandardOutDevice : IDevice
+    {
+        private readonly Stream _source;
+        private readonly Stream _target;
+        private readonly int _sampleRate;
+        private Timer _timer = new Timer();
+        private readonly byte[] _buffer = new byte[2];
+        private int _offset = 0;
+
+        public StandardOutDevice(Stream source, int sampleRate)
+        {
+            _source = source;
+            _sampleRate = sampleRate;
+            _target = System.Console.OpenStandardOutput();
+        }
+
+        public void Play()
+        {
+            Stop();
+
+            _timer = new Timer();
+            _timer.Interval = 1d / (2 * _sampleRate) * 1000;
+            _timer.Elapsed += WriteStream;
+            _timer.AutoReset = true;
+
+            _timer.Start();
+        }
+
+        private void WriteStream(object? sender, ElapsedEventArgs e)
+        {
+            _source.Read(_buffer, _offset, 2);
+            _target.Write(_buffer);
+            _offset += 2;
+            _target.Flush();
+        }
+
+        public void Stop()
+        {
+            _timer.Stop();
+            _timer.Dispose();
+        }
+    }
+}

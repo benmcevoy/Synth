@@ -57,7 +57,7 @@ namespace Synth.WaveForm
         /// Combine multiple waveforms by addition to produce a new wave form.
         /// </summary>
         public static W Add(W w1, W w2)
-                => (t, f, w, p) => Amplitude.Add(w1(t, f, w, p), w2(t, f, w, p));
+            => (t, f, w, p) => w1(t, f, w, p).Amplitude * w2(t, f, w, p).Amplitude;
 
         /// <summary>
         /// Combine multiple waveforms by addition to produce a new wave form.

@@ -1,0 +1,90 @@
+using System.Diagnostics;
+using System.IO;
+using System.Threading;
+using System.Timers;
+using Timer = System.Timers.Timer;
+
+namespace Synth.Console.Devices
+{
+    // i'm afraid to say the code in this repo is a bit pants, just a wrapper on `aplay`
+    // https://github.com/mobiletechtracker/NetCoreAudio/blob/master/NetCoreAudio/Players/UnixPlayerBase.cs
+    public class LinuxAudioDevice : IDevice
+    {
+        private readonly Stream _source;
+        private readonly int _sampleRate;
+        private Process _process;
+        private Timer _timer = new Timer();
+        private readonly byte[] _buffer = new byte[4096];
+        private int _offset = 0;
+
+        public LinuxAudioDevice(Stream source, int sampleRate)
+        {
+            _source = source;
+            _sampleRate = sampleRate;
+        }
+
+        public void Play()
+        {
+            Stop();
+
+            _timer = new Timer();
+            _timer.Interval = 1d / _sampleRate * 1000;
+            _timer.Elapsed += WriteStream;
+            _timer.AutoReset = true;
+
+            _process = StartBashProcess(GetBashCommand());
+            _process.EnableRaisingEvents = true;
+            
+            _timer.Start();
+        }
+
+        private void WriteStream(object? sender, ElapsedEventArgs e)
+        {
+            _source.Read(_buffer, _offset, 100);
+            
+            _process.StandardInput.Write(_buffer);
+            _offset += 100;
+        }
+
+        public void Stop()
+        {
+            if (_process == null) return;
+            _timer.Stop();
+            _timer.Dispose();
+            _process.Kill();
+            _process.Dispose();
+            _process = null;
+        }
+
+        private static Process StartBashProcess(string command)
+        {
+            var escapedArgs = command.Replace("\"", "\\\"");
+
+            var process = new Process
+            {
+                StartInfo = new ProcessStartInfo
+                {
+                    FileName = "/bin/bash",
+                    Arguments = $"-c \"{escapedArgs}\"",
+                    RedirectStandardOutput = true,
+                    RedirectStandardInput = true,
+                    UseShellExecute = false,
+                    CreateNoWindow = true,
+                }
+            };
+
+            process.Start();
+
+            return process;
+        }
+
+        private string GetBashCommand()
+        {
+            // refer: manpage
+            // If filename is not specified, the standard output or input is used. 
+            // -q --quiet Quiet mode. Suppress messages (not sound :))  
+            // -r, --rate=#<Hz> Sampling rate in Hertz. 
+            return $"aplay -r {_sampleRate}";
+        }
+    }
+}

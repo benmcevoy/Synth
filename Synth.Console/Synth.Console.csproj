@@ -2,12 +2,17 @@
 
   <PropertyGroup>
     <OutputType>Exe</OutputType>
-    <TargetFramework>netcoreapp3.1</TargetFramework>
+    <TargetFramework>net6.0</TargetFramework>
+    <LangVersion>8</LangVersion>
   </PropertyGroup>
 
-  <ItemGroup>
-    <PackageReference Include="NAudio" Version="1.10.0" />
-  </ItemGroup>
+  <PropertyGroup Condition=" '$(Configuration)' == 'Debug' ">
+    <AllowUnsafeBlocks>true</AllowUnsafeBlocks>
+  </PropertyGroup>
+
+  <PropertyGroup Condition=" '$(Configuration)' == 'Release' ">
+    <AllowUnsafeBlocks>true</AllowUnsafeBlocks>
+  </PropertyGroup>
 
   <ItemGroup>
     <ProjectReference Include="..\Synth\Synth.csproj" />
@@ -17,6 +22,9 @@
     <None Update="sample.wav">
       <CopyToOutputDirectory>Always</CopyToOutputDirectory>
     </None>
+    <None Include="Devices\NAudio.Windows.WaveOutDevice.cs.example" />
+    <Compile Remove="Devices\LinuxAudioDevice.cs" />
+    <None Include="Devices\LinuxAudioDevice.cs.example" />
   </ItemGroup>
 
 </Project>

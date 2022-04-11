@@ -40,24 +40,32 @@ namespace Synth.Console
 
             const int sampleRate = 44100;
 
-            var voice = new ExampleVoiceWithDelayAndFilter(sampleRate)
+            var voice = new Voice(sampleRate)
             {
-                SustainDuration = () => 0.2,
-                Release = () => 0.01,
-                Attack = () => 0,
-                Decay = () => 0,
-                Delay = () => 0.5,
-                DelayFeedback = () => 0.5,
-                //WaveForm = WaveForm.WaveForms.Triangle(),
-                IsFilterEnabled = true,
-                IsDelayEnabled = true,
-                FilterFrequency = (t) => Pulsator(t, 1000, 500),
-                FilterResonance = (t) => Pulsator(t, 12, 6),
-                PulseWidth = (t, f) => Pulsator(t, 4 / 12, 1 / 12),
+                //SustainDuration = () => 0.2,
+                //Release = () => 0.01,
+                //Attack = () => 0,
+                //Decay = () => 0,
+
+                // WaveForm = WaveForm.WaveForms.Add(
+                //             WaveForm.WaveForms.Detune(WaveForm.WaveForms.SineWave(), WaveForm.WaveForms.SineWave(), 0.5),
+                //             WaveForm.WaveForms.Detune(WaveForm.WaveForms.SineWave(), WaveForm.WaveForms.SineWave(), 0.6)),
+
+                WaveForm =  WaveForm.WaveForms.SineWave(),
+                Frequency = () => 440,
+                Volume = () => Amplitude.MaxValue,
+                //Delay = () => 0.5,
+                //DelayFeedback = () => 0.5,
+
+                //IsFilterEnabled = true,
+                //IsDelayEnabled = true,
+                //FilterFrequency = (t) => Pulsator(t, 1000, 500),
+                //FilterResonance = (t) => Pulsator(t, 12, 6),
+                //PulseWidth = (t, f) => Pulsator(t, 4 / 12, 1 / 12),
             };
 
             var pcm = new MonoWaveStream(sampleRate, voice);
-            var device = new Devices.WaveOutDevice(pcm, sampleRate);
+            var device = new Devices.SdlAudioDevice (pcm, sampleRate);
             var isPlaying = true;
 
             device.Play();
@@ -74,8 +82,8 @@ namespace Synth.Console
 
 
                 voice.Frequency = ProcessKeyPress(key);
-                 voice.WaveForm = Arpeggiator.Arpeggio(Synth.WaveForm.WaveForms.Triangle(), pcm.Time, Arpeggio.Nice);
-                
+                //voice.WaveForm = Arpeggiator.Arpeggio(WaveForm.WaveForms.SineWave(), pcm.Time, Arpeggio.Nice);
+
             }
 
             device.Stop();
