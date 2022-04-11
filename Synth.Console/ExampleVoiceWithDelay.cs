@@ -2,6 +2,15 @@
 
 namespace Synth.Console
 {
+    /// <summary>
+    /// This voice has delay parameters that can be manipulated.
+    /// </summary>
+    /// <example>
+    ///     new ExampleVoiceWithDelay(){
+    ///         Delay = () => 0.25,
+    //          DelayFeedback = () => 0.1,
+    ///     };
+    /// </example>
     class ExampleVoiceWithDelay : Voice
     {
         private readonly CircularDelayBuffer _buffer;

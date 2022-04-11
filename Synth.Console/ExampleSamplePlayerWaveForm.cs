@@ -12,6 +12,13 @@ namespace Synth.Console
         private readonly byte[] _buffer = new byte[2];
         private double _position;
 
+        /// <summary>
+        /// Stream is expected to be 16 bit mono PCM, little endian
+        /// </summary>
+        /// <param name="pcmStream">a PCM stream</param>
+        /// <param name="voiceSampleRate">sample rate of the voice</param>
+        /// <param name="pcmStreamSampleRate">sample rate of the stream</param>
+        /// <param name="scaleToFrequency">playback is 1:1 at the scale frequency, default is 440Hz</param>
         public ExampleSamplePlayerWaveForm(Stream pcmStream, double voiceSampleRate, double pcmStreamSampleRate,
             double scaleToFrequency = 440)
         {
@@ -21,6 +28,11 @@ namespace Synth.Console
             _scaleToFrequency = scaleToFrequency;
         }
 
+        /// <summary>
+        /// The waveform
+        /// </summary>
+        /// <param name="harmonic"></param>
+        /// <returns></returns>
         public W Sample(double harmonic = 1)
             => (t, f, w, p) =>
             {

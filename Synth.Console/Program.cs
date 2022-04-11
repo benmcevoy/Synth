@@ -1,5 +1,4 @@
 ﻿using System;
-using System.IO;
 using Synth.Pitch;
 
 namespace Synth.Console
@@ -14,7 +13,7 @@ namespace Synth.Console
 
             // Phase issue when frequency changes - we get a click
 
-            // tempo, duration should be able to be expressed as semi or quarter times
+            // tempo, duration should be able to be expressed as semi or quarter times - BEATS!
             // metronome
             // sync metronome to tempo, delay to tempo, etc, lfo to tempo
             // when you have a clock that can tick you then have a step sequencer
@@ -41,39 +40,18 @@ namespace Synth.Console
 
             const int sampleRate = 44100;
 
-            // sample wave is expected to be 16bit unsigned, mono 44.1kHz
-            var sampleWave = new ExampleSamplePlayerWaveForm(
-                File.OpenRead("sample.wav"),
-                sampleRate,
-                sampleRate);
+            // sample wave is expected to be 16bit unsigned, pcm, mono 44.1kHz (or specify as the pcmStreamSampleRate)
+            // var sampleWave = new ExampleSamplePlayerWaveForm(
+            //     File.OpenRead("sample.wav"),
+            //     sampleRate, 
+            //     sampleRate);
 
-            var voice = new Voice(sampleRate)
-            {
-                //SustainDuration = () => 0.2,
-                //Release = () => 0.01,
-                //Attack = () => 0,
-                //Decay = () => 0,
-
-
-                WaveForm = sampleWave.Sample(),
-                Frequency = () => 440,
-                Volume = () => Amplitude.MaxValue / 2,
-                //Delay = () => 0.5,
-                //DelayFeedback = () => 0.5,
-
-                //IsFilterEnabled = true,
-                //IsDelayEnabled = true,
-                //FilterFrequency = (t) => Pulsator(t, 1000, 500),
-                //FilterResonance = (t) => Pulsator(t, 12, 6),
-                //PulseWidth = (t, f) => Pulsator(t, 4 / 12, 1 / 12),
-            };
+            var voice = new Voice(sampleRate);
 
             var pcm = new MonoWaveStream(sampleRate, voice);
             var device = new Devices.SdlAudioDevice(pcm, sampleRate);
 
             device.Play();
-
-            voice.TriggerOn();
 
             while (true)
             {
@@ -84,33 +62,35 @@ namespace Synth.Console
                 if (key == ConsoleKey.Escape) break;
 
                 voice.Frequency = ProcessKeyPress(key);
-                //voice.WaveForm = ExampleWaveFormsModifiers.Vibrato(WaveForm.WaveForms.Sawtooth());
+
+                // or voice.TriggerADSR();
+                voice.TriggerOn();
             }
 
             device.Stop();
         }
 
-        public static double Harmonic(double t, double f) => f + (t * 300);
-
-        public static double Pulsator(double t, double f, double r) => f + r * Math.Sin(t * 2);
+        // e.g. voice.Frequency = () => Pulsator(pcm.Time, ProcessKeyPress(key)(), 12);
+        private static double Pulsator(Time t, Frequency f, double rate)
+                => f * Math.Abs(Math.Sin(t * rate));
 
         private static Func<Frequency> ProcessKeyPress(ConsoleKey key) =>
             key switch
             {
-                ConsoleKey.A => () => PitchTable.C2,
-                ConsoleKey.W => () => PitchTable.Db2,
-                ConsoleKey.S => () => PitchTable.D2,
-                ConsoleKey.E => () => PitchTable.Eb2,
-                ConsoleKey.D => () => PitchTable.E2,
-                ConsoleKey.F => () => PitchTable.F2,
-                ConsoleKey.T => () => PitchTable.Gb2,
-                ConsoleKey.G => () => PitchTable.G2,
-                ConsoleKey.Y => () => PitchTable.Ab2,
-                ConsoleKey.H => () => PitchTable.A2,
-                ConsoleKey.U => () => PitchTable.Bb2,
-                ConsoleKey.J => () => PitchTable.B2,
-                ConsoleKey.K => () => PitchTable.C3,
-                ConsoleKey.M => () => PitchTable.A5,
+                ConsoleKey.A => () => PitchTable.C3,
+                ConsoleKey.W => () => PitchTable.Db3,
+                ConsoleKey.S => () => PitchTable.D3,
+                ConsoleKey.E => () => PitchTable.Eb3,
+                ConsoleKey.D => () => PitchTable.E3,
+                ConsoleKey.F => () => PitchTable.F3,
+                ConsoleKey.T => () => PitchTable.Gb3,
+                ConsoleKey.G => () => PitchTable.G3,
+                ConsoleKey.Y => () => PitchTable.Ab3,
+                ConsoleKey.H => () => PitchTable.A3,
+                ConsoleKey.U => () => PitchTable.Bb3,
+                ConsoleKey.J => () => PitchTable.B3,
+                ConsoleKey.K => () => PitchTable.C4,
+                ConsoleKey.M => () => PitchTable.C5,
                 _ => () => PitchTable.A4
             };
     }
