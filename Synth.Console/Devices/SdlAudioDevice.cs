@@ -5,6 +5,14 @@ using Synth.Console.Devices.SDL2;
 
 namespace Synth.Console.Devices
 {
+    /// <summary>
+    /// SDL2 Audio device.
+    /// </summary>
+    /// <remarks>
+    /// Debian-based systems (including Ubuntu) can simply do "sudo apt-get install libsdl2-2.0" to get the library installed system-wide,
+    /// and all sorts of other useful dependencies, too. "sudo apt-get install libsdl2-dev" will install everything necessary to build programs that use SDL.
+    /// Refer: https://wiki.libsdl.org/Installation
+    /// </remarks>
     public class SdlAudioDevice : IDevice
     {
         const int SAMPLES = 4096;
