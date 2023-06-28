@@ -63,8 +63,9 @@ namespace Synth.Console
 
                 voice.Frequency = ProcessKeyPress(key);
 
-                // or voice.TriggerADSR();
-                voice.TriggerOn();
+                // or 
+                voice.TriggerADSR();
+                // or voice.TriggerOn();
             }
 
             device.Stop();
