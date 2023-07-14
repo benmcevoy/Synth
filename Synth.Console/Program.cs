@@ -51,6 +51,8 @@ namespace Synth.Console
             var pcm = new MonoWaveStream(sampleRate, voice);
             var device = new Devices.SdlAudioDevice(pcm, sampleRate);
 
+            voice.WaveForm = WaveForm.WaveForms.Sawtooth();
+
             device.Play();
 
             while (true)
